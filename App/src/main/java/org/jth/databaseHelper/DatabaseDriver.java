@@ -36,4 +36,25 @@ public class DatabaseDriver {
 
         return connection;
     }
+
+    public static boolean initializeDatabase(Connection connection) {
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            String sql = "CREATE TABLE listings (" +
+                "id INT PRIMARY KEY AUTO_INCREMENT," +
+                "latitude DOUBLE NOT NULL," +
+                "longitude DOUBLE NOT NULL," +
+                "address TEXT NOT NULL," +
+                "postal_code TEXT NOT NULL," +
+                "list_type TEXT NOT NULL," +
+                "price DOUBLE NOT NULL," +
+                "amenities TEXT NOT NULL" +
+                ")";
+            statement.executeUpdate(sql);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
