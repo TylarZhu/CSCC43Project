@@ -2,6 +2,7 @@ package org.jth.databaseHelper;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseDriver {
@@ -15,6 +16,12 @@ public class DatabaseDriver {
 
     public static void main(String[] args) {
         Connection connection = connectingToDatabase();
+        initializeDatabase(connection);
+        try {
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -37,10 +44,9 @@ public class DatabaseDriver {
         return connection;
     }
 
-    public static Connection initializeDatabase(Connection connection) {
-        Statement statement = null;
+    private static Connection initializeDatabase(Connection connection) {
         try {
-            statement = connection.createStatement();
+            Statement statement = connection.createStatement();
             String sql = "CREATE TABLE listings (" +
                 "id INT PRIMARY KEY AUTO_INCREMENT," +
                 "latitude DOUBLE NOT NULL," +
@@ -50,13 +56,45 @@ public class DatabaseDriver {
                 "list_type TEXT NOT NULL," +
                 "price DOUBLE NOT NULL," +
                 "amenities TEXT NOT NULL" +
-                ")";
+                ");";
             statement.executeUpdate(sql);
-            sql = "";
+
+            sql = "CREATE TABLE users(" +
+                "social_insurance_number INT PRIMARY KEY," +
+                "address TEXT NOT NULL," +
+                "postal_code TEXT NOT NULL," +
+                "date_of_birth DATE NOT NULL," +
+                "occupation TEXT" +
+                ");";
+            statement.executeUpdate(sql);
             statement.close();
+            System.out.println("initialize database success!");
+            return connection;
         } catch (Exception e) {
+            System.out.println("Something went wrong with initialize database! see below details: ");
             e.printStackTrace();
+            return null;
         }
-        return connection;
+    }
+
+    private static Connection dropDatabase(Connection connection) {
+        try {
+            Statement statement = connection.createStatement();
+            statement = connection.createStatement();
+
+            String sql = "DROP TABLE listings;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE users;";
+            statement.executeUpdate(sql);
+
+            statement.close();
+            System.out.println("drop database success!");
+            return connection;
+        } catch (Exception e) {
+            System.out.println("Something went wrong with drop database! see below details: ");
+            e.printStackTrace();
+            return null;
+        }
     }
 }
