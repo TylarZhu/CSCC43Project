@@ -37,7 +37,7 @@ public class DatabaseDriver {
         return connection;
     }
 
-    public static boolean initializeDatabase(Connection connection) {
+    public static Connection initializeDatabase(Connection connection) {
         Statement statement = null;
         try {
             statement = connection.createStatement();
@@ -52,9 +52,11 @@ public class DatabaseDriver {
                 "amenities TEXT NOT NULL" +
                 ")";
             statement.executeUpdate(sql);
-
+            sql = "";
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return connection;
     }
 }
