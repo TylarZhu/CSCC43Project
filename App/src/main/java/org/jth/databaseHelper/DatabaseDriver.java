@@ -1,9 +1,11 @@
 package org.jth.databaseHelper;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+
+import org.jth.Fields.Amenities;
+import org.jth.Fields.ListingType;
+import org.jth.databaseHelper.DatabaseInsertHelper;
+
 
 public class DatabaseDriver {
     private static final String dbClassName = "com.mysql.cj.jdbc.Driver";
@@ -17,7 +19,17 @@ public class DatabaseDriver {
     public static void main(String[] args) {
         Connection connection = connectingToDatabase();
         initializeDatabase(connection);
-        try {
+        DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
+        DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
+        databaseInsertHelper.insertListings(12,12,"70 TOWN CENTER", "M1P 0B2",
+            ListingType.APARTMENT, 1000000, Amenities.AIR_CONDITIONING);
+        databaseInsertHelper.insertListings(12,13,"80 TOWN CENTER", "M1P 0B1",
+            ListingType.BED_AND_BREAKFAST, 3500000, Amenities.AIR_CONDITIONING);
+        databaseInsertHelper.insertListings(12,14,"50 TOWN CENTER", "M1P 0B0",
+            ListingType.BUNGALOW, 6700000, Amenities.AIR_CONDITIONING);
+        databaseSelectHelper.selectAllItemsFromListings();
+
+        try{
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,15 +60,26 @@ public class DatabaseDriver {
         try {
             Statement statement = connection.createStatement();
             String sql = "CREATE TABLE listings (" +
-                "id INT PRIMARY KEY AUTO_INCREMENT," +
+                "id INT AUTO_INCREMENT," +
                 "latitude DOUBLE NOT NULL," +
                 "longitude DOUBLE NOT NULL," +
                 "address TEXT NOT NULL," +
                 "postal_code TEXT NOT NULL," +
                 "list_type TEXT NOT NULL," +
                 "price DOUBLE NOT NULL," +
-                "amenities TEXT NOT NULL" +
+                "amenities TEXT NOT NULL," +
+                "PRIMARY KEY(id)" +
                 ");";
+            statement.executeUpdate(sql);
+
+            sql = "CREATE TABLE unavailable_times(" +
+                "date_id INT AUTO_INCREMENT," +
+                "list_id INT," +
+                "time DATE NOT NULL," +
+                "PRIMARY KEY (date_id)," +
+                "FOREIGN KEY (list_id) REFERENCES listings (id)" +
+                ");";
+
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE users(" +
@@ -68,7 +91,7 @@ public class DatabaseDriver {
                 ");";
             statement.executeUpdate(sql);
             statement.close();
-            System.out.println("initialize database success!");
+            System.out.println("Initialize database success!");
             return connection;
         } catch (Exception e) {
             System.out.println("Something went wrong with initialize database! see below details: ");
@@ -82,14 +105,17 @@ public class DatabaseDriver {
             Statement statement = connection.createStatement();
             statement = connection.createStatement();
 
-            String sql = "DROP TABLE listings;";
+            String sql = "DROP TABLE unavailable_times;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE listings;";
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE users;";
             statement.executeUpdate(sql);
 
             statement.close();
-            System.out.println("drop database success!");
+            System.out.println("Drop database success!");
             return connection;
         } catch (Exception e) {
             System.out.println("Something went wrong with drop database! see below details: ");
