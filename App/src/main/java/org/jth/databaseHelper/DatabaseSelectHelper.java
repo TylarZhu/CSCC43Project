@@ -3,5 +3,7 @@ package org.jth.databaseHelper;
 import java.sql.*;
 
 public interface DatabaseSelectHelper {
-  ResultSet selectAllItemsFromListings();
+  ResultSet selectAllFromListings();
+  ResultSet selectAllFromUnavailableTime();
+  ResultSet selectAllUnavailableListingsIds();
 }

@@ -8,25 +8,50 @@ import static org.jth.databaseHelper.DatabaseDriver.*;
 public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
 
   @Override
-  public ResultSet selectAllItemsFromListings() {
+  public ResultSet selectAllFromListings() {
     try {
       Connection connection = connectingToDatabase();
       Statement statement = connection.createStatement();
       String sql = "SELECT * FROM listings;";
       ResultSet resultSet = statement.executeQuery(sql);
-      while (resultSet.next()) {
-        double latitude = resultSet.getDouble("latitude");
-        double longitude = resultSet.getDouble("longitude");
-        String address = resultSet.getString("address");
-        double price = resultSet.getDouble("price");
-        System.out.println("latitude: " + latitude);
-        System.out.println("longitude: " + longitude);
-        System.out.println("address: " + address);
-        System.out.println("price: " + price);
-      }
       return resultSet;
     } catch (Exception e) {
-      System.out.println("Something went wrong with select all items from listing! see below details: ");
+      System.out.println("Something went wrong with select all from listing! see below details: ");
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @Override
+  public ResultSet selectAllFromUnavailableTime() {
+    try{
+      Connection connection = connectingToDatabase();
+      Statement statement = connection.createStatement();
+      String sql = "SELECT * FROM unavailable_times;";
+      ResultSet resultSet = statement.executeQuery(sql);
+      while(resultSet.next()) {
+        System.out.println(resultSet.getInt("date_id"));
+        System.out.println(resultSet.getString("times"));
+      }
+      return resultSet;
+    }catch (Exception e) {
+      System.out.println("Something went wrong with select all from unavailable time! see below details: ");
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @Override
+  public ResultSet selectAllUnavailableListingsIds() {
+    try{
+      Connection connection = connectingToDatabase();
+      Statement statement = connection.createStatement();
+      String sql = "SELECT listings.id, unavailable_times.times FROM unavailable_times " +
+          "INNER JOIN listings ON unavailable_times.list_id = listings.id;";
+      ResultSet resultSet = statement.executeQuery(sql);
+      return resultSet;
+    }catch (Exception e) {
+      System.out.println("Something went wrong with select unavailable listings from listing! see below details: ");
       e.printStackTrace();
       return null;
     }

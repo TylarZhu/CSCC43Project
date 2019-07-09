@@ -1,6 +1,9 @@
 package org.jth.databaseHelper;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.jth.Fields.Amenities;
 import org.jth.Fields.ListingType;
@@ -18,21 +21,47 @@ public class DatabaseDriver {
 
     public static void main(String[] args) {
         Connection connection = connectingToDatabase();
-        initializeDatabase(connection);
-        DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
-        DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
-        databaseInsertHelper.insertListings(12,12,"70 TOWN CENTER", "M1P 0B2",
-            ListingType.APARTMENT, 1000000, Amenities.AIR_CONDITIONING);
-        databaseInsertHelper.insertListings(12,13,"80 TOWN CENTER", "M1P 0B1",
-            ListingType.BED_AND_BREAKFAST, 3500000, Amenities.AIR_CONDITIONING);
-        databaseInsertHelper.insertListings(12,14,"50 TOWN CENTER", "M1P 0B0",
-            ListingType.BUNGALOW, 6700000, Amenities.AIR_CONDITIONING);
-        databaseSelectHelper.selectAllItemsFromListings();
 
+        //dropDatabase(connection);
+
+        //initializeDatabase(connection);
+
+        DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
+
+        /*databaseInsertHelper.insertListings(12,12,"70 TOWN CENTER", "M1P 0B2",
+            ListingType.APARTMENT, 1000000, Amenities.AIR_CONDITIONING, "TORONTO", "CANADA");
+        databaseInsertHelper.insertListings(12,13,"80 TOWN CENTER", "M1P 0B1",
+            ListingType.BED_AND_BREAKFAST, 3500000, Amenities.AIR_CONDITIONING, "ONTERIO", "HAHA");
+        databaseInsertHelper.insertListings(12,14,"50 TOWN CENTER", "M1P 0B0",
+            ListingType.BUNGALOW, 6700000, Amenities.AIR_CONDITIONING, "BIG", "CITY");*/
+
+
+        databaseInsertHelper.insertUnavailableTimes(1, parseDate("2018-12-21"));
+        databaseInsertHelper.insertUnavailableTimes(1, parseDate("2018-01-21"));
+        databaseInsertHelper.insertUnavailableTimes(1, parseDate("2018-02-21"));
+
+        databaseInsertHelper.insertUnavailableTimes(2, parseDate("2019-03-1"));
+        databaseInsertHelper.insertUnavailableTimes(2, parseDate("2018-04-1"));
+        databaseInsertHelper.insertUnavailableTimes(2, parseDate("2018-06-1"));
+
+
+        DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
+        ResultSet resultSet = databaseSelectHelper.selectAllFromUnavailableTime();
         try{
+
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static Date parseDate(String date) {
+        try {
+            return new SimpleDateFormat("yyyy-mm-dd").parse(date);
+        } catch (ParseException e) {
+            System.out.println("Parse date error! see below details: ");
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -47,7 +76,6 @@ public class DatabaseDriver {
         try {
             Class.forName(dbClassName);
             connection = DriverManager.getConnection(CONNECTION, USER, PASSWORD);
-            System.out.println("Connect successed!");
         } catch (Exception e) {
             System.out.println("Something went wrong with your connection! see below details: ");
             e.printStackTrace();
@@ -68,6 +96,8 @@ public class DatabaseDriver {
                 "list_type TEXT NOT NULL," +
                 "price DOUBLE NOT NULL," +
                 "amenities TEXT NOT NULL," +
+                "city TEXT NOT NULL," +
+                "country TEXT NOT NULL," +
                 "PRIMARY KEY(id)" +
                 ");";
             statement.executeUpdate(sql);
@@ -75,9 +105,8 @@ public class DatabaseDriver {
             sql = "CREATE TABLE unavailable_times(" +
                 "date_id INT AUTO_INCREMENT," +
                 "list_id INT," +
-                "time DATE NOT NULL," +
-                "PRIMARY KEY (date_id)," +
-                "FOREIGN KEY (list_id) REFERENCES listings (id)" +
+                "times TEXT NOT NULL," +
+                "PRIMARY KEY (date_id)" +
                 ");";
 
             statement.executeUpdate(sql);
