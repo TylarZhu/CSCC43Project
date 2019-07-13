@@ -26,7 +26,7 @@ public class DatabaseDriver {
 
         //initializeDatabase(connection);
 
-        DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
+        //DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
 
         /*databaseInsertHelper.insertListings(12,12,"70 TOWN CENTER", "M1P 0B2",
             ListingType.APARTMENT, 1000000, Amenities.AIR_CONDITIONING, "TORONTO", "CANADA");
@@ -36,17 +36,17 @@ public class DatabaseDriver {
             ListingType.BUNGALOW, 6700000, Amenities.AIR_CONDITIONING, "BIG", "CITY");*/
 
 
-        databaseInsertHelper.insertUnavailableTimes(1, parseDate("2018-12-21"));
+        /*databaseInsertHelper.insertUnavailableTimes(1, parseDate("2018-12-21"));
         databaseInsertHelper.insertUnavailableTimes(1, parseDate("2018-01-21"));
         databaseInsertHelper.insertUnavailableTimes(1, parseDate("2018-02-21"));
 
         databaseInsertHelper.insertUnavailableTimes(2, parseDate("2019-03-1"));
         databaseInsertHelper.insertUnavailableTimes(2, parseDate("2018-04-1"));
-        databaseInsertHelper.insertUnavailableTimes(2, parseDate("2018-06-1"));
+        databaseInsertHelper.insertUnavailableTimes(2, parseDate("2018-06-1"));*/
 
 
         DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
-        ResultSet resultSet = databaseSelectHelper.selectAllFromUnavailableTime();
+        ResultSet resultSet = databaseSelectHelper.selectListingsByLatitudeLongitude(11, 11, 57);
         try{
 
             connection.close();
@@ -55,7 +55,7 @@ public class DatabaseDriver {
         }
     }
 
-    public static Date parseDate(String date) {
+    private static Date parseDate(String date) {
         try {
             return new SimpleDateFormat("yyyy-mm-dd").parse(date);
         } catch (ParseException e) {
