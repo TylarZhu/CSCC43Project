@@ -1,10 +1,9 @@
 package org.jth.databaseHelper;
 
 import java.sql.*;
-
-import org.jth.Fields.Amenities;
-import org.jth.Fields.ListingType;
-import org.jth.databaseHelper.DatabaseInsertHelper;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class DatabaseDriver {
@@ -15,24 +14,13 @@ public class DatabaseDriver {
     private static final String PASSWORD = "zx961130";
 
 
-
-    public static void main(String[] args) {
-        Connection connection = connectingToDatabase();
-        initializeDatabase(connection);
-        DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
-        DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
-        databaseInsertHelper.insertListings(12,12,"70 TOWN CENTER", "M1P 0B2",
-            ListingType.APARTMENT, 1000000, Amenities.AIR_CONDITIONING);
-        databaseInsertHelper.insertListings(12,13,"80 TOWN CENTER", "M1P 0B1",
-            ListingType.BED_AND_BREAKFAST, 3500000, Amenities.AIR_CONDITIONING);
-        databaseInsertHelper.insertListings(12,14,"50 TOWN CENTER", "M1P 0B0",
-            ListingType.BUNGALOW, 6700000, Amenities.AIR_CONDITIONING);
-        databaseSelectHelper.selectAllItemsFromListings();
-
-        try{
-            connection.close();
-        } catch (Exception e) {
+    private static Date parseDate(String date) {
+        try {
+            return new SimpleDateFormat("yyyy-mm-dd").parse(date);
+        } catch (ParseException e) {
+            System.out.println("Parse date error! see below details: ");
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -47,7 +35,6 @@ public class DatabaseDriver {
         try {
             Class.forName(dbClassName);
             connection = DriverManager.getConnection(CONNECTION, USER, PASSWORD);
-            System.out.println("Connect successed!");
         } catch (Exception e) {
             System.out.println("Something went wrong with your connection! see below details: ");
             e.printStackTrace();
@@ -68,6 +55,8 @@ public class DatabaseDriver {
                 "list_type TEXT NOT NULL," +
                 "price DOUBLE NOT NULL," +
                 "amenities TEXT NOT NULL," +
+                "city TEXT NOT NULL," +
+                "country TEXT NOT NULL," +
                 "PRIMARY KEY(id)" +
                 ");";
             statement.executeUpdate(sql);
@@ -75,9 +64,8 @@ public class DatabaseDriver {
             sql = "CREATE TABLE unavailable_times(" +
                 "date_id INT AUTO_INCREMENT," +
                 "list_id INT," +
-                "time DATE NOT NULL," +
-                "PRIMARY KEY (date_id)," +
-                "FOREIGN KEY (list_id) REFERENCES listings (id)" +
+                "times TEXT NOT NULL," +
+                "PRIMARY KEY (date_id)" +
                 ");";
 
             statement.executeUpdate(sql);

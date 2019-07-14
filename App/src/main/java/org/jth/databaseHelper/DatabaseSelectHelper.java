@@ -1,7 +1,9 @@
 package org.jth.databaseHelper;
 
-import java.sql.*;
-
 public interface DatabaseSelectHelper {
-  ResultSet selectAllItemsFromListings();
+  void selectAllListings();
+  void selectAllUnavailableTime();
+  void selectListingIdsAndTimesByUnavailableTime();
+  void selectListingsByPostalCode(String postalCode);
+  void selectListingsByLatitudeLongitude(double latitude, double longitude, double distance);
 }
