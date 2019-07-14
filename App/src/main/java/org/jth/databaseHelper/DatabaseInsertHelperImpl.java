@@ -27,4 +27,21 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       e.printStackTrace();
     }
   }
+  public void insertUsers(int ins, String address, String postal_code, Time date_of_birth, String occupation ){
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = "INSERT INTO Users(ins, address, postal_code, date_of_birth, occupation)" + "VALUES(?,?,?,?,?);";
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setInt(1, ins);
+      preparedStatement.setString(2, address);
+      preparedStatement.setString(3, postal_code);
+      preparedStatement.setTime(4, date_of_birth);
+      preparedStatement.setString(5, occupation);
+
+
+    }catch (Exception e) {
+      System.out.println("Something went wrong with insert User! see below details: ");
+      e.printStackTrace();
+    }
+  }
 }

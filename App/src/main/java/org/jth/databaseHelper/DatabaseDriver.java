@@ -12,7 +12,7 @@ public class DatabaseDriver {
     private static final String CONNECTION = "jdbc:mysql://localhost:3306/CSCC43Pro" +
             "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
     private static final String USER = "root";
-    private static final String PASSWORD = "aax020020";
+    private static final String PASSWORD = "zx961130";
 
 
 
