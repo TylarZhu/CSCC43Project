@@ -1,4 +1,4 @@
-package org.jth.Fields;
+package org.jth.fields;
 
 public enum ListingType {
   HOUSE,

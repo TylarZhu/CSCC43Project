@@ -1,6 +1,6 @@
 package org.jth.databaseHelper;
 
-import org.jth.Fields.*;
+import org.jth.fields.*;
 
 import java.util.Date;
 

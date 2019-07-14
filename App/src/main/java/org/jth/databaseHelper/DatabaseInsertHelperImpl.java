@@ -1,9 +1,8 @@
 package org.jth.databaseHelper;
 
-import org.jth.Fields.*;
+import org.jth.fields.*;
 import java.sql.*;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
