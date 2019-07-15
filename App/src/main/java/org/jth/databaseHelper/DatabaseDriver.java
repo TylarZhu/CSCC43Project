@@ -1,8 +1,12 @@
 package org.jth.databaseHelper;
 
+import org.jth.listings.Listings;
+import org.jth.search.SearchListings;
+
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -12,6 +16,11 @@ public class DatabaseDriver {
             "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
     private static final String USER = "root";
     private static final String PASSWORD = "aax020020";
+
+    public static void main(String[] args) {
+        initializeDatabase(connectingToDatabase());
+
+    }
 
 
     private static Date parseDate(String date) {
@@ -46,7 +55,7 @@ public class DatabaseDriver {
     private static Connection initializeDatabase(Connection connection) {
         try {
             Statement statement = connection.createStatement();
-            String sql = "CREATE TABLE listings (" +
+            String sql = "CREATE TABLE IF NOT EXISTS listings (" +
                 "id INT AUTO_INCREMENT," +
                 "latitude DOUBLE NOT NULL," +
                 "longitude DOUBLE NOT NULL," +
@@ -61,7 +70,7 @@ public class DatabaseDriver {
                 ");";
             statement.executeUpdate(sql);
 
-            sql = "CREATE TABLE unavailable_times(" +
+            sql = "CREATE TABLE IF NOT EXISTS unavailable_times(" +
                 "date_id INT AUTO_INCREMENT," +
                 "list_id INT," +
                 "times TEXT NOT NULL," +

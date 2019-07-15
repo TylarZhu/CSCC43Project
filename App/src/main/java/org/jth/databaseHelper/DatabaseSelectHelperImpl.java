@@ -124,4 +124,21 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       e.printStackTrace();
     }
   }
+
+  @Override
+  public void selectListingsByAddress(String address) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = "SELECT * FROM listings WHERE address = (?);";
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setString(1, address);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      loadFromDB(resultSet);
+      preparedStatement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.out.println("Something went wrong with select Listings By Address! see below details: ");
+      e.printStackTrace();
+    }
+  }
 }

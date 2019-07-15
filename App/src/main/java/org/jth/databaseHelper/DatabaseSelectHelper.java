@@ -6,4 +6,5 @@ public interface DatabaseSelectHelper {
   void selectListingIdsAndTimesByUnavailableTime();
   void selectListingsByPostalCode(String postalCode);
   void selectListingsByLatitudeLongitude(double latitude, double longitude, double distance);
+  void selectListingsByAddress(String address);
 }

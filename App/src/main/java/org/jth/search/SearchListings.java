@@ -8,22 +8,13 @@ import org.jth.databaseHelper.DatabaseSelectHelperImpl;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class SearchListings {
-  public static void main(String[] args) {
-    SearchListings searchListings = new SearchListings();
-    ArrayList<Listings> list = searchListings.getListingsFromLatitudeLongitudeSortByDistance(11, 11, 1);
-    for(int i = 0; i < list.size(); i ++) {
-      System.out.println(list.get(i).getAddress());
-    }
-  }
-
   private ArrayList<Listings> listings = null;
   private DatabaseSelectHelperImpl databaseSelectHelperImpl = new DatabaseSelectHelperImpl();
 
-  public ArrayList<Listings> getAllListingsSortByPriceLowToHigh() {
-    databaseSelectHelperImpl.selectAllListings();
-    listings = databaseSelectHelperImpl.getListings();
+  private void sortByPriceLowToHigh() {
     for(int i = 0; i < listings.size(); i ++) {
       for(int j = 0; j < listings.size(); j ++) {
         if(listings.get(i).getPrice() < listings.get(j).getPrice()) {
@@ -31,6 +22,12 @@ public class SearchListings {
         }
       }
     }
+  }
+
+  public ArrayList<Listings> getAllListingsSortByPrice() {
+    databaseSelectHelperImpl.selectAllListings();
+    listings = databaseSelectHelperImpl.getListings();
+    sortByPriceLowToHigh();
     return listings;
   }
 
@@ -49,6 +46,20 @@ public class SearchListings {
         }
       }
     }
+    return listings;
+  }
+
+  public ArrayList<Listings> getListingsByPostalCode(String postal_code) {
+    databaseSelectHelperImpl.selectListingsByPostalCode(postal_code);
+    listings = databaseSelectHelperImpl.getListings();
+    sortByPriceLowToHigh();
+    return listings;
+  }
+
+  public ArrayList<Listings> getListingsByAddress(String address) {
+    databaseSelectHelperImpl.selectListingsByAddress(address);
+    listings = databaseSelectHelperImpl.getListings();
+    sortByPriceLowToHigh();
     return listings;
   }
 }
