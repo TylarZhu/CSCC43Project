@@ -40,10 +40,6 @@ public class SearchListings {
     // a ^ 2 + b ^ 2 = c ^ 2
     for(int i = 0; i < listings.size(); i ++) {
       for(int j = 0; j < listings.size(); j ++) {
-        double il = listings.get(i).getLatitude(),
-            ir = listings.get(i).getLongitude(),
-            jl = listings.get(j).getLatitude(),
-            jr = listings.get(j).getLongitude();
         double di = Math.sqrt(Math.pow((latitude - listings.get(i).getLatitude()), 2) +
             Math.pow((longitude - listings.get(i).getLongitude()), 2)),
             dj = Math.sqrt(Math.pow((latitude - listings.get(j).getLatitude()), 2) +
