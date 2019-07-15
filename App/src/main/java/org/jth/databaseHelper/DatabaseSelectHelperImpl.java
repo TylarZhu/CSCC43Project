@@ -110,7 +110,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   public void selectListingsByLatitudeLongitude(double latitude, double longitude, double distance) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "SELECT * From listings WHERE (SQRT(POWER((? - longitude), 2) + POWER((? - latitude), 2) < ?));";
+      String sql = "SELECT * From listings WHERE (SQRT(POWER((? - longitude), 2) + POWER((? - latitude), 2)) <= ?);";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setDouble(1, longitude);
       preparedStatement.setDouble(2, latitude);

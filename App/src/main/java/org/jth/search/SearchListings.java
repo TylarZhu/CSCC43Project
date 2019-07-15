@@ -10,15 +10,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class SearchListings {
-
-  /*
   public static void main(String[] args) {
     SearchListings searchListings = new SearchListings();
-    ArrayList<Listings> list = searchListings.getAllListingsSortByPriceLowToHigh();
+    ArrayList<Listings> list = searchListings.getListingsFromLatitudeLongitudeSortByDistance(11, 11, 1);
     for(int i = 0; i < list.size(); i ++) {
       System.out.println(list.get(i).getAddress());
     }
-  }*/
+  }
 
   private ArrayList<Listings> listings = null;
   private DatabaseSelectHelperImpl databaseSelectHelperImpl = new DatabaseSelectHelperImpl();
@@ -27,7 +25,7 @@ public class SearchListings {
     databaseSelectHelperImpl.selectAllListings();
     listings = databaseSelectHelperImpl.getListings();
     for(int i = 0; i < listings.size(); i ++) {
-      for(int j = 1; j < listings.size(); j ++) {
+      for(int j = 0; j < listings.size(); j ++) {
         if(listings.get(i).getPrice() < listings.get(j).getPrice()) {
           Collections.swap(listings, i, j);
         }
@@ -41,7 +39,7 @@ public class SearchListings {
     listings = databaseSelectHelperImpl.getListings();
     // a ^ 2 + b ^ 2 = c ^ 2
     for(int i = 0; i < listings.size(); i ++) {
-      for(int j = 1; j < listings.size(); j ++) {
+      for(int j = 0; j < listings.size(); j ++) {
         double il = listings.get(i).getLatitude(),
             ir = listings.get(i).getLongitude(),
             jl = listings.get(j).getLatitude(),
@@ -50,7 +48,7 @@ public class SearchListings {
             Math.pow((longitude - listings.get(i).getLongitude()), 2)),
             dj = Math.sqrt(Math.pow((latitude - listings.get(j).getLatitude()), 2) +
                 Math.pow((longitude - listings.get(j).getLongitude()), 2));
-        if(di > dj) {
+        if(di < dj) {
           Collections.swap(listings, i, j);
         }
       }

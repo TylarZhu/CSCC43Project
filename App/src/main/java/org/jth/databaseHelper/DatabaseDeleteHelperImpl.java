@@ -6,11 +6,6 @@ import java.sql.PreparedStatement;
 import static org.jth.databaseHelper.DatabaseDriver.connectingToDatabase;
 
 public class DatabaseDeleteHelperImpl implements DatabaseDeleteHelper {
-  public static void main(String[] args) {
-    DatabaseDeleteHelperImpl databaseDeleteHelper = new DatabaseDeleteHelperImpl();
-    databaseDeleteHelper.deleteListingById(3);
-
-  }
 
   @Override
   public void deleteListingById(int id) {
