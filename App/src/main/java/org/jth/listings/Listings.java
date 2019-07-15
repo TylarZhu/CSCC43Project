@@ -40,4 +40,16 @@ public class Listings {
   public double getPrice(){
     return price;
   }
+
+  public double getLatitude() {
+    return latitude;
+  }
+
+  public double getLongitude() {
+    return longitude;
+  }
+
+  public String getAddress() {
+    return address;
+  }
 }

@@ -29,6 +29,7 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       preparedStatement.setString(9,country);
       preparedStatement.executeUpdate();
       preparedStatement.close();
+      connection.close();
     } catch (Exception e) {
       System.out.println("Something went wrong with insert listing! see below details: ");
       e.printStackTrace();
@@ -64,6 +65,7 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       preparedStatement.setString(2, parseDate(date));
       preparedStatement.executeUpdate();
       preparedStatement.close();
+      connection.close();
     } catch (Exception e) {
       System.out.println("Something went wrong with insert Unavailable Times! see below details: ");
       e.printStackTrace();
