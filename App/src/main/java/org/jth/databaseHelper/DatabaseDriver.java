@@ -17,22 +17,6 @@ public class DatabaseDriver {
     private static final String USER = "root";
     private static final String PASSWORD = "aax020020";
 
-    public static void main(String[] args) {
-        initializeDatabase(connectingToDatabase());
-
-    }
-
-
-    private static Date parseDate(String date) {
-        try {
-            return new SimpleDateFormat("yyyy-mm-dd").parse(date);
-        } catch (ParseException e) {
-            System.out.println("Parse date error! see below details: ");
-            e.printStackTrace();
-            return null;
-        }
-    }
-
 
     /**
      * Connects to the database if it is already set up.
@@ -71,10 +55,10 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS unavailable_times(" +
-                "date_id INT AUTO_INCREMENT," +
+                "id INT AUTO_INCREMENT," +
                 "list_id INT," +
                 "times TEXT NOT NULL," +
-                "PRIMARY KEY (date_id)" +
+                "PRIMARY KEY (id)" +
                 ");";
 
             statement.executeUpdate(sql);
