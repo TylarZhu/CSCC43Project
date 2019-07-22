@@ -78,6 +78,7 @@ public class DatabaseDriver {
                 "occupation TEXT" +
                 ");";
             statement.executeUpdate(sql);
+
             statement.close();
             System.out.println("Initialize database success!");
             return connection;
