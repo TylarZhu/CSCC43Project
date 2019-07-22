@@ -20,6 +20,7 @@ public class DatabaseDriver {
 
     /**
      * Connects to the database if it is already set up.
+     *
      * @return Connection to the database
      */
     public static Connection connectingToDatabase() {
@@ -64,12 +65,29 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE users(" +
-                "social_insurance_number INT PRIMARY KEY," +
-                "address TEXT NOT NULL," +
-                "postal_code TEXT NOT NULL," +
-                "date_of_birth DATE NOT NULL," +
-                "occupation TEXT" +
-                ");";
+                    "social_insurance_number INT PRIMARY KEY," +
+                    "address TEXT NOT NULL," +
+                    "postal_code TEXT NOT NULL," +
+                    "date_of_birth DATE NOT NULL," +
+                    "occupation TEXT" +
+                    ");";
+            statement.executeUpdate(sql);
+
+            sql = "CREATE TABLE renters(" +
+                    "renter_id INT PRIMARY KEY," +
+                    "renter_profile INT, " +
+                    "FOREIGN KEY (renter_profile) REFERENCES users(social_insurance_number)," +
+                    "target_id INT," +
+                    "renter_experience_rate INT," +
+                    "payment_information  TEXT NOT NULL" +
+                    ");";
+            statement.executeUpdate(sql);
+
+            sql = "CREATE TABLE hosts(" +
+                    "host_id INT PRIMARY KEY," +
+                    "host_profile INT," +
+                    "FOREIGN KEY (host_profile) REFERENCES users(social_insurance_number)" +
+                    ");";
             statement.executeUpdate(sql);
             statement.close();
             System.out.println("Initialize database success!");
@@ -103,5 +121,10 @@ public class DatabaseDriver {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static void main(String[] args) {
+        Connection connection = connectingToDatabase();
+        initializeDatabase(connection);
     }
 }

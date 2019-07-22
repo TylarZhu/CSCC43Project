@@ -36,7 +36,7 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
     }
   }
 
-  public void insertUsers(int ins, String address, String postal_code, Time date_of_birth, String occupation ){
+  public void insertUsers(int ins, String address, String postal_code, Date date_of_birth, String occupation ){
     try {
       Connection connection = connectingToDatabase();
       String sql = "INSERT INTO Users(ins, address, postal_code, date_of_birth, occupation)" + "VALUES(?,?,?,?,?);";
@@ -44,7 +44,7 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       preparedStatement.setInt(1, ins);
       preparedStatement.setString(2, address);
       preparedStatement.setString(3, postal_code);
-      preparedStatement.setTime(4, date_of_birth);
+      preparedStatement.setString(4, parseDate(date_of_birth));
       preparedStatement.setString(5, occupation);
 
 
@@ -53,6 +53,10 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       e.printStackTrace();
     }
   }
+
+  public void insertRenters(){}
+  public void insertHosts(){}
+  public void insertHostList(){}
 
   @Override
   public void insertUnavailableTimes(int list_id, Date date) {
