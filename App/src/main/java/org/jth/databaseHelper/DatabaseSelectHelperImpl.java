@@ -74,11 +74,16 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   }
 
   @Override
-  public void selectAllListings() {
+  public void selectAllListings(int choice) {
     try {
       Connection connection = connectingToDatabase();
       Statement statement = connection.createStatement();
-      String sql = "SELECT * FROM listings;";
+      String sql = null;
+      if(choice == 1) {
+        sql = "SELECT * FROM listings ORDER BY price DESC;";
+      } else {
+        sql = "SELECT * FROM listings ORDER BY price ASC;";
+      }
       ResultSet resultSet = statement.executeQuery(sql);
       loadListingsFromDB(resultSet);
       connection.close();
@@ -123,10 +128,15 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   }
 
   @Override
-  public void selectListingsByPostalCode(String postalCode) {
+  public void selectListingsByPostalCode(String postalCode, int choice) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "SELECT * FROM listings WHERE  postal_code = (?);";
+      String sql = null;
+      if(choice == 1) {
+        sql = "SELECT * FROM listings WHERE postal_code = (?) ORDER BY price DESC;";
+      } else {
+        sql = "SELECT * FROM listings WHERE postal_code = (?) ORDER BY price ASC;";
+      }
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, postalCode);
       ResultSet resultSet = preparedStatement.executeQuery();
@@ -143,11 +153,14 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   public void selectListingsByLatitudeLongitude(double latitude, double longitude, double distance) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "SELECT * From listings WHERE (SQRT(POWER((? - longitude), 2) + POWER((? - latitude), 2)) <= ?);";
+      String sql = "SELECT * From listings WHERE (SQRT(POWER((? - longitude), 2) + POWER((? - latitude), 2)) <= ?) " +
+          "ORDER BY (SQRT(POWER((? - longitude), 2) + POWER((? - latitude), 2)));";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setDouble(1, longitude);
       preparedStatement.setDouble(2, latitude);
       preparedStatement.setDouble(3, distance);
+      preparedStatement.setDouble(4, longitude);
+      preparedStatement.setDouble(5, latitude);
       ResultSet resultSet = preparedStatement.executeQuery();
       loadListingsFromDB(resultSet);
       preparedStatement.close();
@@ -159,10 +172,15 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   }
 
   @Override
-  public void selectListingsByAddress(String address) {
+  public void selectListingsByAddress(String address, int choice) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "SELECT * FROM listings WHERE address = (?);";
+      String sql = null;
+      if(choice == 1) {
+        sql = "SELECT * FROM listings WHERE address = (?) ORDER BY price DESC;";
+      } else {
+        sql = "SELECT * FROM listings WHERE address = (?) ORDER BY price ASC;";
+      }
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, address);
       ResultSet resultSet = preparedStatement.executeQuery();
