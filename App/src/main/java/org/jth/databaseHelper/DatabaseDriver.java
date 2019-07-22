@@ -89,6 +89,8 @@ public class DatabaseDriver {
                     "FOREIGN KEY (host_profile) REFERENCES users(social_insurance_number)" +
                     ");";
             statement.executeUpdate(sql);
+
+
             statement.close();
             System.out.println("Initialize database success!");
             return connection;
@@ -108,9 +110,6 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE listings;";
-            statement.executeUpdate(sql);
-
-            sql = "DROP TABLE users;";
             statement.executeUpdate(sql);
 
             statement.close();
