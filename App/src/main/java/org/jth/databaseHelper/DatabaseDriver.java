@@ -1,8 +1,12 @@
 package org.jth.databaseHelper;
 
+import org.jth.listings.Listings;
+import org.jth.search.SearchListings;
+
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -27,6 +31,7 @@ public class DatabaseDriver {
 
     /**
      * Connects to the database if it is already set up.
+     *
      * @return Connection to the database
      */
     public static Connection connectingToDatabase() {
@@ -47,38 +52,54 @@ public class DatabaseDriver {
         try {
             Statement statement = connection.createStatement();
             String sql = "CREATE TABLE listings (" +
-                "id INT AUTO_INCREMENT," +
-                "latitude DOUBLE NOT NULL," +
-                "longitude DOUBLE NOT NULL," +
-                "address TEXT NOT NULL," +
-                "postal_code TEXT NOT NULL," +
-                "list_type TEXT NOT NULL," +
-                "price DOUBLE NOT NULL," +
-                "amenities TEXT NOT NULL," +
-                "city TEXT NOT NULL," +
-                "country TEXT NOT NULL," +
-                "PRIMARY KEY(id)" +
-                ");";
+                    "id INT AUTO_INCREMENT," +
+                    "latitude DOUBLE NOT NULL," +
+                    "longitude DOUBLE NOT NULL," +
+                    "address TEXT NOT NULL," +
+                    "postal_code TEXT NOT NULL," +
+                    "list_type TEXT NOT NULL," +
+                    "price DOUBLE NOT NULL," +
+                    "amenities TEXT NOT NULL," +
+                    "city TEXT NOT NULL," +
+                    "country TEXT NOT NULL," +
+                    "PRIMARY KEY(id)" +
+                    ");";
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE unavailable_times(" +
-                "date_id INT AUTO_INCREMENT," +
-                "list_id INT," +
-                "times TEXT NOT NULL," +
-                "PRIMARY KEY (date_id)" +
-                ");";
+                    "date_id INT AUTO_INCREMENT," +
+                    "list_id INT," +
+                    "times TEXT NOT NULL," +
+                    "PRIMARY KEY (date_id)" +
+                    ");";
 
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE users(" +
-                "social_insurance_number INT PRIMARY KEY," +
-                "address TEXT NOT NULL," +
-                "postal_code TEXT NOT NULL," +
-                "date_of_birth DATE NOT NULL," +
-                "occupation TEXT" +
-                ");";
+                    "social_insurance_number INT PRIMARY KEY," +
+                    "address TEXT NOT NULL," +
+                    "postal_code TEXT NOT NULL," +
+                    "date_of_birth DATE NOT NULL," +
+                    "occupation TEXT" +
+                    ");";
             statement.executeUpdate(sql);
 
+            sql = "CREATE TABLE renters(" +
+                    "renter_id INT PRIMARY KEY," +
+                    "renter_profile INT, " +
+                    "FOREIGN KEY (renter_profile) REFERENCES users(social_insurance_number)," +
+                    "target_id INT," +
+                    "renter_experience_rate INT," +
+                    "payment_information  TEXT NOT NULL" +
+                    ");";
+            statement.executeUpdate(sql);
+
+            sql = "CREATE TABLE hosts(" +
+                    "host_id INT PRIMARY KEY," +
+                    "host_profile INT," +
+                    "FOREIGN KEY (host_profile) REFERENCES users(social_insurance_number)" +
+                    ");";
+            statement.executeUpdate(sql);
             statement.close();
             System.out.println("Initialize database success!");
             return connection;
@@ -111,5 +132,10 @@ public class DatabaseDriver {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static void main(String[] args) {
+        Connection connection = connectingToDatabase();
+        initializeDatabase(connection);
     }
 }
