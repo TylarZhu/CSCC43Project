@@ -13,7 +13,7 @@ import java.util.Date;
 public class DatabaseDriver {
     private static final String dbClassName = "com.mysql.cj.jdbc.Driver";
     private static final String CONNECTION = "jdbc:mysql://localhost:3306/CSCC43Pro" +
-            "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
     private static final String USER = "root";
     private static final String PASSWORD = "aax020020";
 
@@ -64,30 +64,32 @@ public class DatabaseDriver {
 
             statement.executeUpdate(sql);
 
-            sql = "CREATE TABLE users(" +
-                    "social_insurance_number INT PRIMARY KEY," +
-                    "address TEXT NOT NULL," +
-                    "postal_code TEXT NOT NULL," +
-                    "date_of_birth DATE NOT NULL," +
-                    "occupation TEXT" +
-                    ");";
+            sql = "CREATE TABLE IF NOT EXISTS users(" +
+                "social_insurance_number INT PRIMARY KEY," +
+                "address TEXT NOT NULL," +
+                "postal_code TEXT NOT NULL," +
+                "date_of_birth TEXT NOT NULL," +
+                "occupation TEXT" +
+                ");";
             statement.executeUpdate(sql);
 
-            sql = "CREATE TABLE renters(" +
-                    "renter_id INT PRIMARY KEY," +
-                    "renter_profile INT, " +
-                    "FOREIGN KEY (renter_profile) REFERENCES users(social_insurance_number)," +
-                    "target_id INT," +
-                    "renter_experience_rate INT," +
-                    "payment_information  TEXT NOT NULL" +
-                    ");";
+            sql = "CREATE TABLE IF NOT EXISTS renters(" +
+                "renter_id INT AUTO_INCREMENT," +
+                "renter_profile INT," +
+                "card_number INT NOT NULL," +
+                "card_expiry_date TEXT NOT NULL," +
+                "cvv INT NOT NULL," +
+                "PRIMARY KEY (renter_id)," +
+                "FOREIGN KEY (renter_profile) REFERENCES users(social_insurance_number)" +
+                ");";
             statement.executeUpdate(sql);
 
-            sql = "CREATE TABLE hosts(" +
-                    "host_id INT PRIMARY KEY," +
-                    "host_profile INT," +
-                    "FOREIGN KEY (host_profile) REFERENCES users(social_insurance_number)" +
-                    ");";
+            sql = "CREATE TABLE IF NOT EXISTS hosts(" +
+                "host_id INT," +
+                "host_profile INT," +
+                "PRIMARY KEY (host_id)," +
+                "FOREIGN KEY (host_profile) REFERENCES users(social_insurance_number)" +
+                ");";
             statement.executeUpdate(sql);
 
 
@@ -110,6 +112,15 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE listings;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE renters;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE hosts;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE users;";
             statement.executeUpdate(sql);
 
             statement.close();
