@@ -24,7 +24,6 @@ public class DatabaseDriver {
      * @return Connection to the database
      */
     public static Connection connectingToDatabase() {
-        System.out.println("Connecting to database...");
         Connection connection = null;
         try {
             Class.forName(dbClassName);
@@ -66,6 +65,8 @@ public class DatabaseDriver {
 
             sql = "CREATE TABLE IF NOT EXISTS users(" +
                 "social_insurance_number INT PRIMARY KEY," +
+                "first_name TEXT NOT NULL," +
+                "last_name TEXT NOT NULL," +
                 "address TEXT NOT NULL," +
                 "postal_code TEXT NOT NULL," +
                 "date_of_birth TEXT NOT NULL," +
@@ -76,7 +77,7 @@ public class DatabaseDriver {
             sql = "CREATE TABLE IF NOT EXISTS renters(" +
                 "renter_id INT AUTO_INCREMENT," +
                 "renter_profile INT," +
-                "card_number INT NOT NULL," +
+                "card_number TEXT NOT NULL," +
                 "card_expiry_date TEXT NOT NULL," +
                 "cvv INT NOT NULL," +
                 "PRIMARY KEY (renter_id)," +
@@ -85,12 +86,25 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS hosts(" +
-                "host_id INT," +
+                "host_id INT AUTO_INCREMENT," +
                 "host_profile INT," +
                 "PRIMARY KEY (host_id)," +
                 "FOREIGN KEY (host_profile) REFERENCES users(social_insurance_number)" +
                 ");";
             statement.executeUpdate(sql);
+
+            sql = "CREATE TABLE IF NOT EXISTS commentTable(" +
+                "comment_id INT," +
+                "fromUsr INT," +
+                "toUsr INT," +
+                "content TEXT NOT NULL," +
+                "rate INT NOT NULL," +
+                "PRIMARY KEY (comment_id)," +
+                "FOREIGN KEY (fromUsr) REFERENCES users(social_insurance_number)," +
+                "FOREIGN KEY (toUsr) REFERENCES users(social_insurance_number)" +
+                ");";
+            statement.executeUpdate(sql);
+
             statement.close();
             System.out.println("Initialize database success!");
             return connection;
@@ -118,6 +132,9 @@ public class DatabaseDriver {
             sql = "DROP TABLE hosts;";
             statement.executeUpdate(sql);
 
+            sql = "DROP TABLE commentTable;";
+            statement.executeUpdate(sql);
+
             sql = "DROP TABLE users;";
             statement.executeUpdate(sql);
 
@@ -129,10 +146,5 @@ public class DatabaseDriver {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static void main(String[] args) {
-        Connection connection = connectingToDatabase();
-        initializeDatabase(connection);
     }
 }

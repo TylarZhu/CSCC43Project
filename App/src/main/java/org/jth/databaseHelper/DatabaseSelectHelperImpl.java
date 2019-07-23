@@ -1,6 +1,7 @@
 package org.jth.databaseHelper;
 
 import java.sql.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +21,11 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   private ArrayList<Listings> listings = new ArrayList<>();
   private ArrayList<UnavailableTime> unavailableTimes = new ArrayList<>();
 
+  public static void main(String[] args) {
+    DatabaseSelectHelper databaseSelectHelper = new DatabaseSelectHelperImpl();
+
+  }
+
   private void loadUnavailableTimesFromDB(ResultSet resultSet) {
     try {
       while(resultSet.next()) {
@@ -34,7 +40,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     }
   }
 
-  private static Date parseDate(String date) {
+  public static Date parseDate(String date) {
     try {
       return new SimpleDateFormat("yyyy-MM-dd").parse(date);
     } catch (ParseException e) {
