@@ -12,10 +12,14 @@ import static org.jth.databaseHelper.DatabaseDriver.*;
 
 public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
 
-
+  public static void main(String[] args) {
+    DatabaseInsertHelperImpl databaseSelectHelper = new DatabaseInsertHelperImpl();
+    databaseSelectHelper.insertComment(1001, 1005, "love", 5);
+  }
 
   @Override
-  public void insertListings(double latitude, double longitude, String address, String postal_code, ListingType listingType, double price, Amenities amenities, String city, String country) {
+  public void insertListings(double latitude, double longitude, String address, String postal_code,
+                             ListingType listingType, double price, Amenities amenities, String city, String country) {
     try {
       Connection connection = connectingToDatabase();
       String sql = "INSERT INTO listings (latitude, longitude, address, postal_code, list_type, price, amenities, city, country)" +
@@ -39,10 +43,11 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
     }
   }
 
-  private void insertUsers(int ins, String firstName, String lastName, String address, String postal_code, Date date_of_birth, String occupation){
+  private void insertUsers(int ins, String firstName, String lastName, String address, String postal_code,
+                           Date date_of_birth, String occupation){
     try {
       Connection connection = connectingToDatabase();
-      String sql = "INSERT INTO Users VALUES (?,?,?,?,?,?,?);";
+      String sql = "INSERT INTO Users VALUES (?, ?, ?, ?, ?, ?, ?);";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setInt(1, ins);
       preparedStatement.setString(2, firstName);
@@ -82,7 +87,8 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
   }
 
   @Override
-  public void insertHosts(int ins, String firstName, String lastName, String address, String postal_code, Date date_of_birth, String occupation) {
+  public void insertHosts(int ins, String firstName, String lastName, String address, String postal_code,
+                          Date date_of_birth, String occupation) {
     insertUsers(ins, firstName, lastName, address, postal_code, date_of_birth, occupation);
     try {
       Connection connection = connectingToDatabase();
@@ -98,7 +104,119 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
     }
   }
 
-  public void insertHostList(){}
+  private boolean checkUserExsits(int ins, int choice) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = null;
+      if(choice == 1) {
+        sql = "SELECT EXISTS(SELECT * FROM renters WHERE renter_profile = ?);";
+      } else {
+        sql = "SELECT EXISTS(SELECT * FROM hosts WHERE host_profile = ?);";
+      }
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setInt(1, ins);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      if(resultSet.getInt(1) == 1) {
+        preparedStatement.close();
+        connection.close();
+        resultSet.close();
+        return true;
+      } else {
+        preparedStatement.close();
+        connection.close();
+        resultSet.close();
+        return false;
+      }
+    } catch (Exception e) {
+      System.out.println("Something went wrong with check Renter Exsits! see below details: ");
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+
+  @Override
+  public void insertRelationshipRenterHost(int renterIns, int hostIns) {
+    try {
+      Connection connection = connectingToDatabase();
+      if (checkUserExsits(renterIns, 1) && checkUserExsits(hostIns, 2)) {
+        String sql = "INSERT relationshipRenterHost (renter_ins, host_ins) VALUES (?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, renterIns);
+        preparedStatement.setInt(2, hostIns);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+      } else {
+        System.out.println("Wrong social insurance number! no such user exists!");
+      }
+    } catch(Exception e){
+        System.out.println("Something went wrong with insert Relationship Renter Host! see below details: ");
+        e.printStackTrace();
+    }
+  }
+
+  private boolean checkCommentTarget(int fromIns, int toIns, int choice) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = null;
+      if(choice == 1) {
+        sql = "SELECT DISTINCT host_ins FROM relationshipRenterHost WHERE renter_ins = ?;";
+      } else {
+        sql = "SELECT DISTINCT renter_ins FROM relationshipRenterHost WHERE host_ins = ?;";
+      }
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setInt(1, fromIns);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      while(resultSet.next()) {
+        if(resultSet.getInt(1) == toIns) {
+          preparedStatement.close();
+          connection.close();
+          resultSet.close();
+          return true;
+        }
+      }
+      preparedStatement.close();
+      connection.close();
+      resultSet.close();
+      return false;
+    } catch (Exception e) {
+      System.out.println("Something went wrong with check Comment Target! see below details: ");
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  @Override
+  public void insertComment(int fromIns, int toIns, String comment, int rate) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = null;
+      if((checkUserExsits(fromIns, 1) || checkUserExsits(fromIns, 2)) &&
+          (checkUserExsits(toIns, 1) || checkUserExsits(toIns, 2))){
+        // if from is renter
+        if(checkCommentTarget(fromIns, toIns, 1) || checkCommentTarget(fromIns, toIns, 2)) {
+          sql = "INSERT commentTable (fromUsr, toUsr, content, rate) VALUES (?, ?, ?, ?);";
+          PreparedStatement preparedStatement = connection.prepareStatement(sql);
+          preparedStatement.setInt(1, fromIns);
+          preparedStatement.setInt(2, toIns);
+          preparedStatement.setString(3, comment);
+          preparedStatement.setInt(4, rate);
+          preparedStatement.executeUpdate();
+          preparedStatement.close();
+          connection.close();
+        } else {
+          System.out.println("Wrong host and renter are do not have any relationship!");
+        }
+      } else {
+        System.out.println("Wrong social insurance number! no such user exists!");
+      }
+    } catch (Exception e) {
+      System.out.println("Something went wrong with insert comment! see below details: ");
+      e.printStackTrace();
+    }
+  }
 
   @Override
   public void insertUnavailableTimes(int list_id, Date date) {

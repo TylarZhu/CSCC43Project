@@ -21,11 +21,6 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   private ArrayList<Listings> listings = new ArrayList<>();
   private ArrayList<UnavailableTime> unavailableTimes = new ArrayList<>();
 
-  public static void main(String[] args) {
-    DatabaseSelectHelper databaseSelectHelper = new DatabaseSelectHelperImpl();
-
-  }
-
   private void loadUnavailableTimesFromDB(ResultSet resultSet) {
     try {
       while(resultSet.next()) {

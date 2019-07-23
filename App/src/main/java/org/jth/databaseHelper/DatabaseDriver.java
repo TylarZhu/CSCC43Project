@@ -64,13 +64,14 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS users(" +
-                "social_insurance_number INT PRIMARY KEY," +
+                "social_insurance_number INT," +
                 "first_name TEXT NOT NULL," +
                 "last_name TEXT NOT NULL," +
                 "address TEXT NOT NULL," +
                 "postal_code TEXT NOT NULL," +
                 "date_of_birth TEXT NOT NULL," +
-                "occupation TEXT" +
+                "occupation TEXT," +
+                "PRIMARY KEY (social_insurance_number)" +
                 ");";
             statement.executeUpdate(sql);
 
@@ -94,7 +95,7 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS commentTable(" +
-                "comment_id INT," +
+                "comment_id INT AUTO_INCREMENT," +
                 "fromUsr INT," +
                 "toUsr INT," +
                 "content TEXT NOT NULL," +
@@ -105,6 +106,15 @@ public class DatabaseDriver {
                 ");";
             statement.executeUpdate(sql);
 
+            sql = "CREATE TABLE IF NOT EXISTS relationshipRenterHost(" +
+                "relation_id INT AUTO_INCREMENT," +
+                "renter_ins INT," +
+                "host_ins INT," +
+                "PRIMARY KEY (relation_id)," +
+                "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)," +
+                "FOREIGN KEY (host_ins) REFERENCES users(social_insurance_number)" +
+                ");";
+            statement.executeUpdate(sql);
             statement.close();
             System.out.println("Initialize database success!");
             return connection;
@@ -130,6 +140,9 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE hosts;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE relationshipRenterHost";
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE commentTable;";
