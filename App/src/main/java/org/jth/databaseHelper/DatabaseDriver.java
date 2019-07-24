@@ -58,7 +58,8 @@ public class DatabaseDriver {
                 "id INT AUTO_INCREMENT," +
                 "list_id INT," +
                 "times TEXT NOT NULL," +
-                "PRIMARY KEY (id)" +
+                "PRIMARY KEY (id)," +
+                "FOREIGN KEY (list_id) REFERENCES listings(id)" +
                 ");";
 
             statement.executeUpdate(sql);
@@ -115,6 +116,16 @@ public class DatabaseDriver {
                 "FOREIGN KEY (host_ins) REFERENCES users(social_insurance_number)" +
                 ");";
             statement.executeUpdate(sql);
+
+            sql = "CREATE TABLE IF NOT EXISTS hostOwnListings(\n" +
+                "id INT," +
+                "list_id INT," +
+                "host_id INT," +
+                "PRIMARY KEY (id)," +
+                "FOREIGN KEY (list_id) REFERENCES listings(id)," +
+                "FOREIGN KEY (host_id) REFERENCES hosts(host_id)" +
+                ");";
+            statement.executeUpdate(sql);
             statement.close();
             System.out.println("Initialize database success!");
             return connection;
@@ -131,6 +142,9 @@ public class DatabaseDriver {
             statement = connection.createStatement();
 
             String sql = "DROP TABLE unavailable_times;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE hostOwnListings;";
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE listings;";

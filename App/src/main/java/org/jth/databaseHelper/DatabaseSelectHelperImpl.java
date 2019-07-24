@@ -26,7 +26,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       while(resultSet.next()) {
         unavailableTimes.add(new UnavailableTime(resultSet.getInt("id"),
             resultSet.getInt("list_id"),
-            parseDate(resultSet.getString("times"))));
+            parseStringToDate(resultSet.getString("times"))));
       }
       resultSet.close();
     } catch (Exception e) {
@@ -35,7 +35,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     }
   }
 
-  public static Date parseDate(String date) {
+  private static Date parseStringToDate(String date) {
     try {
       return new SimpleDateFormat("yyyy-MM-dd").parse(date);
     } catch (ParseException e) {
@@ -43,6 +43,11 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       e.printStackTrace();
       return null;
     }
+  }
+
+  private static String parseDatetoString(Date date) {
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    return dateFormat.format(date);
   }
 
   private void loadListingsFromDB(ResultSet resultSet){
@@ -112,16 +117,17 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   }
 
   @Override
-  public void selectListingIdsAndTimesByUnavailableTime() {
+  public void selectListingIdsAndTimesByUnavailableTime(Date date) {
     try{
       Connection connection = connectingToDatabase();
-      Statement statement = connection.createStatement();
-      String sql = "SELECT * FROM unavailable_times " +
-          "INNER JOIN listings ON unavailable_times.list_id = listings.id;";
-      ResultSet resultSet = statement.executeQuery(sql);
+      String sql = "SELECT * FROM unavailable_times WHERE times = ?";
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      System.out.println(parseDatetoString(date));
+      preparedStatement.setString(1, parseDatetoString(date));
+      ResultSet resultSet = preparedStatement.executeQuery();
       loadUnavailableTimesFromDB(resultSet);
       connection.close();
-      statement.close();
+      preparedStatement.close();
     }catch (Exception e) {
       System.out.println("Something went wrong with select listing ids and times By unavailable time! see below details: ");
       e.printStackTrace();

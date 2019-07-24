@@ -224,7 +224,6 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       Connection connection = connectingToDatabase();
       String sql = "INSERT INTO unavailable_times (list_id, times) VALUES (?, ?);";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
       preparedStatement.setInt(1, list_id);
       preparedStatement.setString(2, parseDate(date));
       preparedStatement.executeUpdate();
