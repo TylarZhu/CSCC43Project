@@ -9,4 +9,6 @@ public interface DatabaseSelectHelper {
   void selectListingsByPostalCode(String postalCode, int choice);
   void selectListingsByLatitudeLongitude(double latitude, double longitude, double distance);
   void selectListingsByAddress(String address, int choice);
+
+  void selectAllRenters();
 }
