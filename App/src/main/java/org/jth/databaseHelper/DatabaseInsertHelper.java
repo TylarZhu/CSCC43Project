@@ -13,8 +13,10 @@ public interface DatabaseInsertHelper {
 
   void insertRentors(int ins, String firstName, String lastName, String address, String postal_code, Date date_of_birth,
                      String occupation, String cardNumnber, String card_expiry_date, int cvv);
+
   void insertHosts(int ins, String firstName, String lastName, String address, String postal_code, Date date_of_birth,
                      String occupation);
+
   void insertRelationshipRenterHost(int renterIns, int hostIns);
 
   void insertComment(int fromIns, int toIns, String comment, int rate);

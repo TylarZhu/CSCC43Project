@@ -3,6 +3,9 @@ package org.jth.listings;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 public class Listings {
   private int id;
   private double latitude;
@@ -14,6 +17,8 @@ public class Listings {
   private Amenities amenities;
   private String city;
   private String country;
+
+  private ArrayList<Date> unavailableTime;
 
   public Listings(int id,
                   double latitude,
@@ -35,6 +40,14 @@ public class Listings {
     this.amenities = amenities;
     this.city = city;
     this.country = country;
+  }
+
+  public void setUnavailableTime(ArrayList<Date> times) {
+    unavailableTime = times;
+  }
+
+  public ArrayList<Date> getUnavailableTime() {
+    return unavailableTime;
   }
 
   public double getPrice(){

@@ -10,7 +10,6 @@ import java.util.Date;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
-import org.jth.listings.UnavailableTime;
 import org.jth.user.Hosts;
 import org.jth.user.Renters;
 import org.jth.user.Users;
@@ -20,27 +19,25 @@ import static org.jth.databaseHelper.DatabaseDriver.*;
 public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
 
   private ArrayList<Listings> listings = new ArrayList<>();
-  private ArrayList<UnavailableTime> unavailableTimes = new ArrayList<>();
-  private ArrayList<Users> users= new ArrayList<>();
+  private ArrayList<Users> users = new ArrayList<>();
 
-  private void loadUnavailableTimesFromDB(ResultSet resultSet) {
-    try {
-      while(resultSet.next()) {
-        unavailableTimes.add(new UnavailableTime(resultSet.getInt("id"),
-            resultSet.getInt("list_id"),
-            parseStringToDate(resultSet.getString("times"))));
+  public static void main(String[] args) {
+    DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
+    databaseSelectHelper.selectAllListings(1);
+    ArrayList<Listings> listOfListings = databaseSelectHelper.getListings();
+    for(int i = 0; i < listOfListings.size(); i ++) {
+      ArrayList<Date> dates = listOfListings.get(i).getUnavailableTime();
+      for(int j = 0; j < dates.size(); j ++) {
+        System.out.println(listOfListings.get(i).getAddress());
+        System.out.println(dates.get(j).toString());
       }
-      resultSet.close();
-    } catch (Exception e) {
-      System.out.println("Something went wrong with load unavailable Times from DB! see below details: ");
-      e.printStackTrace();
     }
   }
 
-  private void loadListingsFromDB(ResultSet resultSet){
+  private void loadListingsFromDB(ResultSet resultSet, Connection connection){
     try {
       while(resultSet.next()) {
-        listings.add(new Listings(resultSet.getInt("id"),
+        Listings listing = new Listings(resultSet.getInt("id"),
             resultSet.getDouble("latitude"),
             resultSet.getDouble("longitude"),
             resultSet.getString("address"),
@@ -49,7 +46,18 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
             resultSet.getDouble("price"),
             Amenities.valueOf(resultSet.getString("amenities")),
             resultSet.getString("city"),
-            resultSet.getString("country")));
+            resultSet.getString("country"));
+        String sql = "SELECT * FROM unavailable_times WHERE list_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, resultSet.getInt("id"));
+        ResultSet listingsUnavailableTime = preparedStatement.executeQuery();
+        ArrayList<Date> unavailableTimes = new ArrayList<>();
+        while (listingsUnavailableTime.next()) {
+          unavailableTimes.add(parseStringToDate(listingsUnavailableTime.getString("times")));
+        }
+        listing.setUnavailableTime(unavailableTimes);
+        listingsUnavailableTime.close();
+        listings.add(listing);
       }
       resultSet.close();
     } catch (Exception e) {
@@ -111,7 +119,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     }
   }
 
-  private static Date parseStringToDate(String date) {
+  private Date parseStringToDate(String date) {
     try {
       return new SimpleDateFormat("yyyy-MM-dd").parse(date);
     } catch (ParseException e) {
@@ -121,17 +129,13 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     }
   }
 
-  private static String parseDatetoString(Date date) {
+  private String parseDatetoString(Date date) {
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     return dateFormat.format(date);
   }
 
   public ArrayList<Listings> getListings(){
     return listings;
-  }
-
-  public ArrayList<UnavailableTime> getUnavailableTimes(){
-    return unavailableTimes;
   }
 
   public ArrayList<Users> getUsers(){
@@ -150,45 +154,11 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
         sql = "SELECT * FROM listings ORDER BY price ASC;";
       }
       ResultSet resultSet = statement.executeQuery(sql);
-      loadListingsFromDB(resultSet);
+      loadListingsFromDB(resultSet, connection);
       connection.close();
       statement.close();
     } catch (Exception e) {
       System.out.println("Something went wrong with select all from listing! see below details: ");
-      e.printStackTrace();
-    }
-  }
-
-  @Override
-  public void selectAllUnavailableTime() {
-    try{
-      Connection connection = connectingToDatabase();
-      Statement statement = connection.createStatement();
-      String sql = "SELECT * FROM unavailable_times;";
-      ResultSet resultSet = statement.executeQuery(sql);
-      loadUnavailableTimesFromDB(resultSet);
-      connection.close();
-      statement.close();
-    }catch (Exception e) {
-      System.out.println("Something went wrong with select all from unavailable time! see below details: ");
-      e.printStackTrace();
-    }
-  }
-
-  @Override
-  public void selectListingIdsAndTimesByUnavailableTime(Date date) {
-    try{
-      Connection connection = connectingToDatabase();
-      String sql = "SELECT * FROM unavailable_times WHERE times = ?";
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
-      System.out.println(parseDatetoString(date));
-      preparedStatement.setString(1, parseDatetoString(date));
-      ResultSet resultSet = preparedStatement.executeQuery();
-      loadUnavailableTimesFromDB(resultSet);
-      connection.close();
-      preparedStatement.close();
-    }catch (Exception e) {
-      System.out.println("Something went wrong with select listing ids and times By unavailable time! see below details: ");
       e.printStackTrace();
     }
   }
@@ -206,7 +176,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, postalCode);
       ResultSet resultSet = preparedStatement.executeQuery();
-      loadListingsFromDB(resultSet);
+      loadListingsFromDB(resultSet, connection);
       preparedStatement.close();
       connection.close();
     } catch (Exception e) {
@@ -229,7 +199,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       preparedStatement.setDouble(4, longitude);
       preparedStatement.setDouble(5, latitude);
       ResultSet resultSet = preparedStatement.executeQuery();
-      loadListingsFromDB(resultSet);
+      loadListingsFromDB(resultSet, connection);
       preparedStatement.close();
       connection.close();
     } catch (Exception e) {
@@ -251,7 +221,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, address);
       ResultSet resultSet = preparedStatement.executeQuery();
-      loadListingsFromDB(resultSet);
+      loadListingsFromDB(resultSet, connection);
       preparedStatement.close();
       connection.close();
     } catch (Exception e) {
