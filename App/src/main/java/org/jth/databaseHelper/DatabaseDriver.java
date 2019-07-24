@@ -1,13 +1,6 @@
 package org.jth.databaseHelper;
 
-import org.jth.listings.Listings;
-import org.jth.search.SearchListings;
-
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 
 public class DatabaseDriver {
@@ -36,7 +29,7 @@ public class DatabaseDriver {
         return connection;
     }
 
-    private static Connection initializeDatabase(Connection connection) {
+    public static Connection initializeDatabase(Connection connection) {
         try {
             Statement statement = connection.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS listings (" +
@@ -111,9 +104,11 @@ public class DatabaseDriver {
                 "relation_id INT AUTO_INCREMENT," +
                 "renter_ins INT," +
                 "host_ins INT," +
+                "list_id INT," +
                 "PRIMARY KEY (relation_id)," +
                 "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)," +
-                "FOREIGN KEY (host_ins) REFERENCES users(social_insurance_number)" +
+                "FOREIGN KEY (host_ins) REFERENCES users(social_insurance_number)," +
+                "FOREIGN KEY (list_id) REFERENCES listings(id)" +
                 ");";
             statement.executeUpdate(sql);
 
@@ -203,8 +198,8 @@ public class DatabaseDriver {
         }
     }
 
-    public static void main(String[] args) {
-        Connection connection = connectingToDatabase();
-        dropDatabase(connection);
-    }
+//    public static void main(String[] args) {
+//        Connection connection = connectingToDatabase();
+//        dropDatabase(connection);
+//    }
 }

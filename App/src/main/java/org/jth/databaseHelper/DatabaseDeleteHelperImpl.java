@@ -36,6 +36,11 @@ public class DatabaseDeleteHelperImpl implements DatabaseDeleteHelper {
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
 
+        sql = "DELETE FROM relationshipRenterHost WHERE list_id = ?;";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+
         sql = "DELETE FROM listings WHERE id = ?;";
         preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);

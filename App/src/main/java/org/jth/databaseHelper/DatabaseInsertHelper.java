@@ -17,7 +17,7 @@ public interface DatabaseInsertHelper {
   void insertHosts(int ins, String firstName, String lastName, String address, String postal_code, Date date_of_birth,
                      String occupation);
 
-  void insertRelationshipRenterHost(int renterIns, int hostIns);
+  void insertRelationshipRenterHost(int renterIns, int hostIns, int listId);
 
   void insertComment(int fromIns, int toIns, String comment, int rate);
 
