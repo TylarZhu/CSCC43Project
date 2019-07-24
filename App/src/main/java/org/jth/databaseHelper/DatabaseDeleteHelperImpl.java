@@ -10,15 +10,33 @@ public class DatabaseDeleteHelperImpl implements DatabaseDeleteHelper {
   private DatabaseCheckDataHelperImpl databaseCheckDataHelper = new DatabaseCheckDataHelperImpl();
 
   @Override
-  public void deleteListingById(int id) {
+  public void deleteListingById(int ins, int id) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "DELETE FROM listings WHERE id = ?;";
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
-      preparedStatement.setInt(1, id);
-      preparedStatement.executeUpdate();
-      preparedStatement.close();
-      connection.close();
+      if(databaseCheckDataHelper.checkUserOrListExsits(2, ins) &&
+          databaseCheckDataHelper.checkUserOrListExsits(3, id)) {
+        String sql = "DELETE FROM unavailable_times WHERE list_id = ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+
+        sql = "DELETE FROM hostOwnListings WHERE list_id = ?;";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+
+        sql = "DELETE FROM rentalHistory WHERE list_id = ?;";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+
+        sql = "DELETE FROM listings WHERE id = 1;";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+      }
     } catch (Exception e) {
       System.out.println("Something went wrong with delete listing by id! see below details: ");
       e.printStackTrace();

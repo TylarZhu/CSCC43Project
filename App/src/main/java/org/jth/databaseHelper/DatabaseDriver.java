@@ -128,21 +128,23 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS futureBooking(" +
-                    "id INT AUTO_INCRMENT," +
+                    "id INT AUTO_INCREMENT," +
                     "renter_ins INT," +
                     "list_id INT," +
-                    "FOREIGN KEY (list_id) REFERENCES listing(id)," +
+                    "PRIMARY KEY (id)," +
+                    "FOREIGN KEY (list_id) REFERENCES listings(id)," +
                     "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)" +
                     ");";
 
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS rentalHistory(" +
-                    "id INT AUTO_INCRMENT," +
+                    "id INT AUTO_INCREMENT," +
                     "renter_ins INT," +
                     "list_id INT," +
-                    "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)" +
-                    "FOREIGN KEY (list_id) REFERENCES listing(id)" +
+                    "PRIMARY KEY (id)," +
+                    "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)," +
+                    "FOREIGN KEY (list_id) REFERENCES listings(id)" +
                     ");";
             statement.executeUpdate(sql);
 
@@ -167,7 +169,10 @@ public class DatabaseDriver {
             sql = "DROP TABLE hostOwnListings;";
             statement.executeUpdate(sql);
 
-            sql = "DROP TABLE listings;";
+            sql = "DROP TABLE rentalHistory;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE futureBooking;";
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE renters;";
@@ -185,6 +190,9 @@ public class DatabaseDriver {
             sql = "DROP TABLE users;";
             statement.executeUpdate(sql);
 
+            sql = "DROP TABLE listings;";
+            statement.executeUpdate(sql);
+
             statement.close();
             System.out.println("Drop database success!");
             return connection;
@@ -193,5 +201,10 @@ public class DatabaseDriver {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static void main(String[] args) {
+        Connection connection = connectingToDatabase();
+        dropDatabase(connection);
     }
 }

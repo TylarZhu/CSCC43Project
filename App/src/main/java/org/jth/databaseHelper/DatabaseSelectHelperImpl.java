@@ -21,19 +21,6 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   private ArrayList<Listings> listings = new ArrayList<>();
   private ArrayList<Users> users = new ArrayList<>();
 
-  public static void main(String[] args) {
-    DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
-    databaseSelectHelper.selectAllListings(1);
-    ArrayList<Listings> listOfListings = databaseSelectHelper.getListings();
-    for(int i = 0; i < listOfListings.size(); i ++) {
-      ArrayList<Date> dates = listOfListings.get(i).getUnavailableTime();
-      for(int j = 0; j < dates.size(); j ++) {
-        System.out.println(listOfListings.get(i).getAddress());
-        System.out.println(dates.get(j).toString());
-      }
-    }
-  }
-
   private void loadListingsFromDB(ResultSet resultSet, Connection connection){
     try {
       while(resultSet.next()) {
