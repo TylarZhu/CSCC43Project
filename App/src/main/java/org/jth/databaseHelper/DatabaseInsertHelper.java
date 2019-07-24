@@ -18,4 +18,6 @@ public interface DatabaseInsertHelper {
   void insertRelationshipRenterHost(int renterIns, int hostIns);
 
   void insertComment(int fromIns, int toIns, String comment, int rate);
+
+  void insertHostOwnListings(int hostIns, int listId);
 }

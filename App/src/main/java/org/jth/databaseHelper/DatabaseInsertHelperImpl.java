@@ -12,10 +12,12 @@ import static org.jth.databaseHelper.DatabaseDriver.*;
 
 public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
 
-  public static void main(String[] args) {
-    DatabaseInsertHelperImpl databaseSelectHelper = new DatabaseInsertHelperImpl();
-    databaseSelectHelper.insertComment(1001, 1005, "love", 5);
-  }
+  private DatabaseCheckDataHelperImpl databaseCheckDataHelper = new DatabaseCheckDataHelperImpl();
+
+//  public static void main(String[] args) {
+//    DatabaseInsertHelperImpl databaseSelectHelper = new DatabaseInsertHelperImpl();
+//    databaseSelectHelper.insertHostOwnListings(1004, 2);
+//  }
 
   @Override
   public void insertListings(double latitude, double longitude, String address, String postal_code,
@@ -104,43 +106,14 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
     }
   }
 
-  private boolean checkUserExsits(int ins, int choice) {
-    try {
-      Connection connection = connectingToDatabase();
-      String sql = null;
-      if(choice == 1) {
-        sql = "SELECT EXISTS(SELECT * FROM renters WHERE renter_profile = ?);";
-      } else {
-        sql = "SELECT EXISTS(SELECT * FROM hosts WHERE host_profile = ?);";
-      }
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
-      preparedStatement.setInt(1, ins);
-      ResultSet resultSet = preparedStatement.executeQuery();
-      resultSet.next();
-      if(resultSet.getInt(1) == 1) {
-        preparedStatement.close();
-        connection.close();
-        resultSet.close();
-        return true;
-      } else {
-        preparedStatement.close();
-        connection.close();
-        resultSet.close();
-        return false;
-      }
-    } catch (Exception e) {
-      System.out.println("Something went wrong with check Renter Exsits! see below details: ");
-      e.printStackTrace();
-      return false;
-    }
-  }
 
 
   @Override
   public void insertRelationshipRenterHost(int renterIns, int hostIns) {
     try {
       Connection connection = connectingToDatabase();
-      if (checkUserExsits(renterIns, 1) && checkUserExsits(hostIns, 2)) {
+      if (databaseCheckDataHelper.checkUserOrListExsits(renterIns, 1) &&
+          databaseCheckDataHelper.checkUserOrListExsits(hostIns, 2)) {
         String sql = "INSERT relationshipRenterHost (renter_ins, host_ins) VALUES (?, ?);";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, renterIns);
@@ -149,6 +122,7 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
         preparedStatement.close();
         connection.close();
       } else {
+        connection.close();
         System.out.println("Wrong social insurance number! no such user exists!");
       }
     } catch(Exception e){
@@ -157,46 +131,18 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
     }
   }
 
-  private boolean checkCommentTarget(int fromIns, int toIns, int choice) {
-    try {
-      Connection connection = connectingToDatabase();
-      String sql = null;
-      if(choice == 1) {
-        sql = "SELECT DISTINCT host_ins FROM relationshipRenterHost WHERE renter_ins = ?;";
-      } else {
-        sql = "SELECT DISTINCT renter_ins FROM relationshipRenterHost WHERE host_ins = ?;";
-      }
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
-      preparedStatement.setInt(1, fromIns);
-      ResultSet resultSet = preparedStatement.executeQuery();
-      while(resultSet.next()) {
-        if(resultSet.getInt(1) == toIns) {
-          preparedStatement.close();
-          connection.close();
-          resultSet.close();
-          return true;
-        }
-      }
-      preparedStatement.close();
-      connection.close();
-      resultSet.close();
-      return false;
-    } catch (Exception e) {
-      System.out.println("Something went wrong with check Comment Target! see below details: ");
-      e.printStackTrace();
-      return false;
-    }
-  }
-
   @Override
   public void insertComment(int fromIns, int toIns, String comment, int rate) {
     try {
       Connection connection = connectingToDatabase();
       String sql = null;
-      if((checkUserExsits(fromIns, 1) || checkUserExsits(fromIns, 2)) &&
-          (checkUserExsits(toIns, 1) || checkUserExsits(toIns, 2))){
+      if((databaseCheckDataHelper.checkUserOrListExsits(fromIns, 1) ||
+          databaseCheckDataHelper.checkUserOrListExsits(fromIns, 2)) &&
+          (databaseCheckDataHelper.checkUserOrListExsits(toIns, 1) ||
+              databaseCheckDataHelper.checkUserOrListExsits(toIns, 2))){
         // if from is renter
-        if(checkCommentTarget(fromIns, toIns, 1) || checkCommentTarget(fromIns, toIns, 2)) {
+        if(databaseCheckDataHelper.checkCommentTarget(fromIns, toIns, 1) ||
+            databaseCheckDataHelper.checkCommentTarget(fromIns, toIns, 2)) {
           sql = "INSERT commentTable (fromUsr, toUsr, content, rate) VALUES (?, ?, ?, ?);";
           PreparedStatement preparedStatement = connection.prepareStatement(sql);
           preparedStatement.setInt(1, fromIns);
@@ -207,13 +153,39 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
           preparedStatement.close();
           connection.close();
         } else {
+          connection.close();
           System.out.println("Wrong host and renter are do not have any relationship!");
         }
       } else {
+        connection.close();
         System.out.println("Wrong social insurance number! no such user exists!");
       }
     } catch (Exception e) {
       System.out.println("Something went wrong with insert comment! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void insertHostOwnListings(int hostIns, int listId) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = null;
+      if(databaseCheckDataHelper.checkUserOrListExsits(hostIns, 2) &&
+          databaseCheckDataHelper.checkUserOrListExsits(listId, 3)) {
+        sql = "INSERT hostOwnListings (list_id, host_id) VALUES (?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, listId);
+        preparedStatement.setInt(2, hostIns);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+      } else {
+        connection.close();
+        System.out.println("Listings or hosts does not exists!");
+      }
+    } catch (Exception e) {
+      System.out.println("Something went wrong with insert Host Own Listings! see below details: ");
       e.printStackTrace();
     }
   }

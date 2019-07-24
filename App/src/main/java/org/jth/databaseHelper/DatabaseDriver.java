@@ -118,12 +118,12 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS hostOwnListings(" +
-                "id INT," +
+                "id INT AUTO_INCREMENT," +
                 "list_id INT," +
                 "host_id INT," +
                 "PRIMARY KEY (id)," +
                 "FOREIGN KEY (list_id) REFERENCES listings(id)," +
-                "FOREIGN KEY (host_id) REFERENCES hosts(host_id)" +
+                "FOREIGN KEY (host_id) REFERENCES users(social_insurance_number)" +
                 ");";
             statement.executeUpdate(sql);
             statement.close();
