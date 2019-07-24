@@ -11,6 +11,7 @@ import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
 import org.jth.listings.UnavailableTime;
+import org.jth.user.Hosts;
 import org.jth.user.Renters;
 import org.jth.user.Users;
 
@@ -20,7 +21,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
 
   private ArrayList<Listings> listings = new ArrayList<>();
   private ArrayList<UnavailableTime> unavailableTimes = new ArrayList<>();
-  private ArrayList<Users> renterLists = new ArrayList<>();
+  private ArrayList<Users> users= new ArrayList<>();
 
   private void loadUnavailableTimesFromDB(ResultSet resultSet) {
     try {
@@ -60,7 +61,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   private void loadRenterFromDB(ResultSet resultSet) {
     try {
       while (resultSet.next()) {
-        renterLists.add(new Renters(resultSet.getInt("social_insurance_number"),
+        users.add(new Renters(resultSet.getInt("social_insurance_number"),
             resultSet.getString("first_name"),
             resultSet.getString("last_name"),
             resultSet.getString("address"),
@@ -72,8 +73,40 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
             resultSet.getString("card_expiry_date"),
             resultSet.getInt("cvv")));
       }
+      resultSet.close();
     } catch (Exception e) {
       System.out.println("Something went wrong with load renter from DB! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  private void loadHostsFromDB(ResultSet hostInfo, Connection connection) {
+    try {
+      while (hostInfo.next()) {
+        Hosts hosts = new Hosts(hostInfo.getInt("social_insurance_number"),
+            hostInfo.getString("first_name"),
+            hostInfo.getString("last_name"),
+            hostInfo.getString("address"),
+            hostInfo.getString("postal_code"),
+            parseStringToDate(hostInfo.getString("date_of_birth")),
+            hostInfo.getString("occupation"),
+            hostInfo.getInt("host_id"));
+        String sql = "SELECT list_id FROM hostOwnListings WHERE host_ins = ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, hostInfo.getInt("host_profile"));
+        ResultSet hostListings = preparedStatement.executeQuery();
+        ArrayList<Integer> ownListings = new ArrayList<>();
+        while (hostListings.next()) {
+          ownListings.add(hostListings.getInt("list_id"));
+        }
+        hosts.setOwnListings(ownListings);
+        users.add(hosts);
+        hostListings.close();
+      }
+      hostInfo.close();
+
+    } catch (Exception e) {
+      System.out.println("Something went wrong with load host from DB! see below details: ");
       e.printStackTrace();
     }
   }
@@ -101,8 +134,8 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     return unavailableTimes;
   }
 
-  public ArrayList<Users> getRenterLists(){
-    return renterLists;
+  public ArrayList<Users> getUsers(){
+    return users;
   }
 
   @Override
@@ -227,13 +260,22 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   }
 
   @Override
-  public void selectAllRenters() {
+  public void selectAllUsers(int choice) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "SELECT * FROM users NATURAL JOIN renters WHERE renters.renter_profile = users.social_insurance_number;";
+      String sql = null;
+      if(choice == 1) {
+        sql = "SELECT * FROM users NATURAL JOIN renters WHERE renters.renter_profile = users.social_insurance_number;";
+      } else {
+        sql = "SELECT * FROM users NATURAL JOIN hosts WHERE hosts.host_profile = users.social_insurance_number;";
+      }
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(sql);
-      loadRenterFromDB(resultSet);
+      if(choice == 1) {
+        loadRenterFromDB(resultSet);
+      } else {
+        loadHostsFromDB(resultSet, connection);
+      }
       connection.close();
       statement.close();
     } catch (Exception e) {

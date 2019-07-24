@@ -173,7 +173,7 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       String sql = null;
       if(databaseCheckDataHelper.checkUserOrListExsits(hostIns, 2) &&
           databaseCheckDataHelper.checkUserOrListExsits(listId, 3)) {
-        sql = "INSERT hostOwnListings (list_id, host_id) VALUES (?, ?);";
+        sql = "INSERT hostOwnListings (list_id, host_ins) VALUES (?, ?);";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, listId);
         preparedStatement.setInt(2, hostIns);
