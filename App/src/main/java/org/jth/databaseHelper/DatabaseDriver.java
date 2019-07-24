@@ -128,10 +128,11 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS futureBooking(" +
-                    "id INT AUTO_INCRMENT," +
+                    "id INT AUTO_INCREMENT," +
                     "renter_ins INT," +
                     "list_id INT," +
-                    "FOREIGN KEY (list_id) REFERENCES listing(id)," +
+                    "PRIMARY KEY (id)," +
+                    "FOREIGN KEY (list_id) REFERENCES listings(id)," +
                     "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)" +
                     ");";
 
@@ -141,8 +142,9 @@ public class DatabaseDriver {
                     "id INT AUTO_INCRMENT," +
                     "renter_ins INT," +
                     "list_id INT," +
-                    "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)" +
-                    "FOREIGN KEY (list_id) REFERENCES listing(id)" +
+                    "PRIMARY KEY (id)," +
+                    "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)," +
+                    "FOREIGN KEY (list_id) REFERENCES listings(id)" +
                     ");";
             statement.executeUpdate(sql);
 
