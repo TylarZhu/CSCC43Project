@@ -117,7 +117,7 @@ public class DatabaseDriver {
                 ");";
             statement.executeUpdate(sql);
 
-            sql = "CREATE TABLE IF NOT EXISTS hostOwnListings(\n" +
+            sql = "CREATE TABLE IF NOT EXISTS hostOwnListings(" +
                 "id INT," +
                 "list_id INT," +
                 "host_id INT," +
