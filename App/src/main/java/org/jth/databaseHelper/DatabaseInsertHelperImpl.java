@@ -191,6 +191,54 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
   }
 
   @Override
+  public void insertFutureBooking(int renterIns, int listId) {
+    try {
+      Connection connection = connectingToDatabase();
+      if(databaseCheckDataHelper.checkUserOrListExsits(renterIns, 1) &&
+        databaseCheckDataHelper.checkUserOrListExsits(listId, 3)) {
+        String sql = "INSERT futeureBooking (renter_ins, list_id) VALUES (?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, renterIns);
+        preparedStatement.setInt(2,listId);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+      } else {
+        connection.close();
+        System.out.println("Listing or renters does not exists!");
+      }
+    } catch (Exception e) {
+      System.out.println("Something went wrong with insert future booking! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void insertRentalHistory(int renterIns, int listId) {
+    try {
+      Connection connection = connectingToDatabase();
+      if(databaseCheckDataHelper.checkUserOrListExsits(renterIns, 1) &&
+              databaseCheckDataHelper.checkUserOrListExsits(listId, 3)) {
+        String sql = "INSERT rentalHistory (renter_ins, list_id) VALUES (?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, renterIns);
+        preparedStatement.setInt(2,listId);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+      } else {
+        connection.close();
+        System.out.println("Listing or renters does not exists!");
+      }
+    } catch (Exception e) {
+      System.out.println("Something went wrong with insert rental history! see below details: ");
+      e.printStackTrace();
+    }
+
+  }
+
+
+  @Override
   public void insertUnavailableTimes(int list_id, Date date) {
     try {
       Connection connection = connectingToDatabase();

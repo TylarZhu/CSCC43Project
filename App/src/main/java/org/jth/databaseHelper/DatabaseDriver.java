@@ -126,6 +126,26 @@ public class DatabaseDriver {
                 "FOREIGN KEY (host_ins) REFERENCES users(social_insurance_number)" +
                 ");";
             statement.executeUpdate(sql);
+
+            sql = "CREATE TABLE IF NOT EXISTS futureBooking(" +
+                    "id INT AUTO_INCRMENT," +
+                    "renter_ins INT," +
+                    "list_id INT," +
+                    "FOREIGN KEY (list_id) REFERENCES listing(id)," +
+                    "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)" +
+                    ");";
+
+            statement.executeUpdate(sql);
+
+            sql = "CREATE TABLE IF NOT EXISTS rentalHistory(" +
+                    "id INT AUTO_INCRMENT," +
+                    "renter_ins INT," +
+                    "list_id INT," +
+                    "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)" +
+                    "FOREIGN KEY (list_id) REFERENCES listing(id)" +
+                    ");";
+            statement.executeUpdate(sql);
+
             statement.close();
             System.out.println("Initialize database success!");
             return connection;

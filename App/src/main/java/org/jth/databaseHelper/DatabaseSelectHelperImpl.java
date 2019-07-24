@@ -215,6 +215,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     }
   }
 
+
   @Override
   public void selectListingsByLatitudeLongitude(double latitude, double longitude, double distance) {
     try {
