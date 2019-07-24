@@ -41,6 +41,8 @@ public class DatabaseCheckDataHelperImpl implements DatabaseCheckDataHelper {
     }
   }
 
+
+
   @Override
   public boolean checkCommentTarget(int fromIns, int toIns, int choice) {
     try {
@@ -68,6 +70,35 @@ public class DatabaseCheckDataHelperImpl implements DatabaseCheckDataHelper {
       return false;
     } catch (Exception e) {
       System.out.println("Something went wrong with check Comment Target! see below details: ");
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  @Override
+  public boolean checkHostOwnList(int ins, int listId) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = "SELECT EXISTS(SELECT * FROM hostOwnListings WHERE host_ins = ? AND list_id = ?);";
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setInt(1, ins);
+      preparedStatement.setInt(2, listId);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      if(resultSet.getInt(1) == 1) {
+        preparedStatement.close();
+        connection.close();
+        resultSet.close();
+        return true;
+      } else {
+        System.out.println("Host does not own this house !");
+        preparedStatement.close();
+        connection.close();
+        resultSet.close();
+        return false;
+      }
+    } catch (Exception e) {
+      System.out.println("Something went wrong with check host own list! see below details: ");
       e.printStackTrace();
       return false;
     }

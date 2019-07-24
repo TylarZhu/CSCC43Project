@@ -140,10 +140,10 @@ public class DatabaseDriver {
 
             sql = "CREATE TABLE IF NOT EXISTS rentalHistory(" +
                     "id INT AUTO_INCREMENT," +
-                    "renter_ins INT," +
+                    "host_ins INT," +
                     "list_id INT," +
                     "PRIMARY KEY (id)," +
-                    "FOREIGN KEY (renter_ins) REFERENCES users(social_insurance_number)," +
+                    "FOREIGN KEY (host_ins) REFERENCES users(social_insurance_number)," +
                     "FOREIGN KEY (list_id) REFERENCES listings(id)" +
                     ");";
             statement.executeUpdate(sql);

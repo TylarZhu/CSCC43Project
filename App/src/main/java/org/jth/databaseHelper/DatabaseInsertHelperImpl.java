@@ -214,14 +214,14 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
   }
 
   @Override
-  public void insertRentalHistory(int renterIns, int listId) {
+  public void insertRentalHistory(int host_ins, int listId) {
     try {
       Connection connection = connectingToDatabase();
-      if(databaseCheckDataHelper.checkUserOrListExsits(renterIns, 1) &&
+      if(databaseCheckDataHelper.checkUserOrListExsits(host_ins, 1) &&
               databaseCheckDataHelper.checkUserOrListExsits(listId, 3)) {
-        String sql = "INSERT rentalHistory (renter_ins, list_id) VALUES (?, ?);";
+        String sql = "INSERT rentalHistory (host_ins, list_id) VALUES (?, ?);";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, renterIns);
+        preparedStatement.setInt(1, host_ins);
         preparedStatement.setInt(2,listId);
         preparedStatement.executeUpdate();
         preparedStatement.close();
