@@ -41,8 +41,6 @@ public class DatabaseCheckDataHelperImpl implements DatabaseCheckDataHelper {
     }
   }
 
-
-
   @Override
   public boolean checkCommentTarget(int fromIns, int toIns, int choice) {
     try {
@@ -74,7 +72,6 @@ public class DatabaseCheckDataHelperImpl implements DatabaseCheckDataHelper {
       return false;
     }
   }
-
   @Override
   public boolean checkHostOwnList(int ins, int listId) {
     try {
@@ -103,4 +100,31 @@ public class DatabaseCheckDataHelperImpl implements DatabaseCheckDataHelper {
       return false;
     }
   }
+
+  @Override
+  public boolean checkListingStatus(int id) {
+    try{
+      String sql = null;
+      Connection connection = connectingToDatabase();
+      sql = "SELECT EXISTS(SELECT * FROM relationshipRenterHost WHERE list_id = ?);";
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setInt(1, id);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      if(resultSet.getInt(1) == 1){
+        preparedStatement.close();
+        connection.close();
+        return true;
+      }else{
+        preparedStatement.close();
+        connection.close();
+        return false;
+      }
+    }catch (Exception e){
+      System.out.println("something went wrong with check listing status! see below details:");
+      e.printStackTrace();
+      return false;
+    }
+  }
+
 }
