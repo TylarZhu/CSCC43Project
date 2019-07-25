@@ -21,11 +21,11 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
 
   @Override
   public void insertListings(double latitude, double longitude, String address, String postal_code,
-                             ListingType listingType, double price, String city, String country) {
+                             ListingType listingType, double price, String city, String country, boolean availability) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "INSERT INTO listings (latitude, longitude, address, postal_code, list_type, price, city, country)" +
-          "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+      String sql = "INSERT INTO listings (latitude, longitude, address, postal_code, list_type, price, city, country, availability)" +
+          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setDouble(1, latitude);
       preparedStatement.setDouble(2, longitude);
@@ -35,6 +35,7 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       preparedStatement.setDouble(6, price);
       preparedStatement.setString(7,city);
       preparedStatement.setString(8,country);
+      preparedStatement.setBoolean(9,availability);
       preparedStatement.executeUpdate();
       preparedStatement.close();
       connection.close();

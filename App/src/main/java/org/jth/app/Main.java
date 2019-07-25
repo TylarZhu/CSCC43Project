@@ -4,6 +4,8 @@ import org.jth.databaseHelper.*;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
+import org.jth.user.Hosts;
+import org.jth.user.Users;
 
 import java.sql.Connection;
 import java.text.ParseException;
@@ -23,10 +25,10 @@ public class Main {
 //      DatabaseDriver databaseDriver = new DatabaseDriver();
 //      Connection connection = DatabaseDriver.connectingToDatabase();
 //      DatabaseDriver.initializeDatabase(connection);
-//
+
 //      DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
 //      databaseInsertHelper.insertListings(11, 11, "70 TOWN CENTER", "0B2 0P3",
-//          APARTMENT, 1, "TORONTO", "CANANDA");
+//          APARTMENT, 1, "TORONTO", "CANANDA", true);
 //      databaseInsertHelper.insertAmenities(1, KITCHEN);
 //      databaseInsertHelper.insertAmenities(1, HEATING);
 //      databaseInsertHelper.insertAmenities(1, WASHER);
@@ -38,7 +40,7 @@ public class Main {
 //
 //
 //      databaseInsertHelper.insertListings(9, 9, "80 TOWN CENTER", "0B2 0P10",
-//          BOUNTIQUE_HOTEL, 3, "TORONTO", "CANANDA");
+//          BOUNTIQUE_HOTEL, 3, "TORONTO", "CANANDA", true);
 //      databaseInsertHelper.insertAmenities(2, IRON);
 //      databaseInsertHelper.insertAmenities(2, LAPTOP_FRIENDLY_WORKSPACE);
 //      databaseInsertHelper.insertAmenities(2, SELF_CHECK_IN);
@@ -49,7 +51,7 @@ public class Main {
 //      databaseInsertHelper.insertUnavailableTimes(2, parseStringToDate("2018-10-15"), parseStringToDate("2018-10-20"));
 //
 //      databaseInsertHelper.insertListings(10, 10, "100 TOWN CENTER", "0B2 0P1",
-//          BOUNTIQUE_HOTEL, 4, "TORONTO", "CANANDA");
+//          BOUNTIQUE_HOTEL, 4, "TORONTO", "CANANDA",true);
 //      databaseInsertHelper.insertAmenities(3, SHAMPOO);
 //      databaseInsertHelper.insertAmenities(3, AIR_CONDITIONING);
 //      databaseInsertHelper.insertAmenities(3, DRYER);
@@ -60,7 +62,7 @@ public class Main {
 //      databaseInsertHelper.insertUnavailableTimes(3, parseStringToDate("2018-07-01"), parseStringToDate("2018-07-02"));
 //
 //      databaseInsertHelper.insertListings(10, 11, "110 TOWN CENTER", "0B2 0P6",
-//          BOUNTIQUE_HOTEL, 35, "TORONTO", "CANANDA");
+//          BOUNTIQUE_HOTEL, 35, "TORONTO", "CANANDA", true);
 //      databaseInsertHelper.insertAmenities(4, GANGERS);
 //      databaseInsertHelper.insertAmenities(4, HAIR_DRYER);
 //      databaseInsertHelper.insertAmenities(4, TV);
@@ -73,24 +75,62 @@ public class Main {
       DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
       databaseSelectHelper.selectAllListings(1);
       ArrayList<Listings> thisListings = databaseSelectHelper.getListings();
+
+      for(Listings listings: thisListings) {
+        System.out.println("***********************");
+        System.out.println(listings.getId());
+        System.out.println(listings.getPrice());
+        System.out.println(listings.getAddress());
+        System.out.println(listings.getAvailability());
+        for(Amenities amenities: listings.getAmenities()) {
+          System.out.println(amenities.name());
+        }
+        for(ArrayList<Date> dates: listings.getUnavailableTime()){
+          for(Date date: dates) {
+            System.out.println(date.toString());
+          }
+        }
+      }
+
+//      databaseInsertHelper.insertHosts(1001,"Xingyuan", "Zhu", "70 Town Center",
+//          "M1P 0B2", parseStringToDate("1998-12-01"), "student");
 //
-//      for(Listings listings: thisListings) {
+//      databaseInsertHelper.insertHosts(1002,"Yining", "Zhou", "190 Brough Dr",
+//          "M1P 888", parseStringToDate("2001-5-18"), "student");
+//
+//      databaseInsertHelper.insertHosts(1003,"Junjie", "Huang", "I Do Know where",
+//          "M1P 999", parseStringToDate("1892-12-01"), "student");
+//
+//      databaseInsertHelper.insertRentors(1004,"Jaja", "Wang", "80 Town center", "888 M0P",
+//          parseStringToDate("1999-12-01"), "Car drive", "1003210367", "12-31", 123);
+//
+//      databaseInsertHelper.insertRentors(1005,"Fafa", "Liang", "90 Town center", "111 M0P",
+//          parseStringToDate("1990-12-11"), "drive resr", "1003211111", "12-34", 321);
+//
+//      databaseInsertHelper.insertRentors(1006,"Tingting", "Bang", "1010 Town center", "000 M0P",
+//          parseStringToDate("1999-01-12"), "drive prive", "100320000", "12-03", 893);
+//
+//      databaseInsertHelper.insertHostOwnListings(1001, 1);
+//      databaseInsertHelper.insertHostOwnListings(1002, 2);
+//      databaseInsertHelper.insertHostOwnListings(1003, 3);
+//      databaseInsertHelper.insertHostOwnListings(1001, 4);
+//
+//
+//      databaseInsertHelper.insertRelationshipRenterHost(1004, 1001, 1);
+//      databaseInsertHelper.insertRelationshipRenterHost(1005, 1001, 4);
+//      databaseInsertHelper.insertRelationshipRenterHost(1006, 1002, 2);
+
+//      databaseSelectHelper.selectAllUsers(2);
+//      ArrayList<Users> hostList = databaseSelectHelper.getUsers();
+
+//      for(Users users: hostList) {
 //        System.out.println("***********************");
-//        System.out.println(listings.getId());
-//        System.out.println(listings.getPrice());
-//        System.out.println(listings.getAddress());
-//        for(Amenities amenities: listings.getAmenities()) {
-//          System.out.println(amenities.name());
-//        }
-//        for(ArrayList<Date> dates: listings.getUnavailableTime()){
-//          for(Date date: dates) {
-//            System.out.println(date.toString());
-//          }
+//        System.out.println(users.getName());
+//        for(Integer listing: ((Hosts) users).getOwnListings()){
+//          System.out.println(listing);
 //        }
 //      }
 
-      System.out.println(thisListings.get(3).checkAvailability(parseStringToDate("2019-01-09"),
-          parseStringToDate("2019-01-10")));
 
 //      DatabaseUpdateHelperImpl databaseUpdateHelper = new DatabaseUpdateHelperImpl();
 //      databaseUpdateHelper.updatePrice(1, 12);

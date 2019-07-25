@@ -32,7 +32,8 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
             ListingType.valueOf(resultSet.getString("list_type")),
             resultSet.getDouble("price"),
             resultSet.getString("city"),
-            resultSet.getString("country"));
+            resultSet.getString("country"),
+            resultSet.getBoolean("availability"));
 
         String sql = "SELECT * FROM unavailable_times WHERE list_id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -52,6 +53,15 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
           listing.addAmenities(Amenities.valueOf(listAmenities.getString("amenity")));
         }
         listAmenities.close();
+
+        sql = "SELECT renter_ins FROM relationshipRenterHost WHERE list_id = ?";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, resultSet.getInt("id"));
+        ResultSet listRenters = preparedStatement.executeQuery();
+        while(listRenters.next()) {
+          listing.setRenter_ins_history(listRenters.getInt("renter_ins"));
+        }
+        listRenters.close();
 
         listings.add(listing);
       }
@@ -99,11 +109,10 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, hostInfo.getInt("host_profile"));
         ResultSet hostListings = preparedStatement.executeQuery();
-        ArrayList<Integer> ownListings = new ArrayList<>();
         while (hostListings.next()) {
-          ownListings.add(hostListings.getInt("list_id"));
+          hosts.setOwnListings(hostListings.getInt("list_id"));
         }
-        hosts.setOwnListings(ownListings);
+
         users.add(hosts);
         hostListings.close();
       }

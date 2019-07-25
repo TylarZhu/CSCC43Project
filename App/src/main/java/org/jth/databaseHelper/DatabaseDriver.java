@@ -42,6 +42,7 @@ public class DatabaseDriver {
                 "price DOUBLE NOT NULL," +
                 "city TEXT NOT NULL," +
                 "country TEXT NOT NULL," +
+                "availability BOOLEAN,"+
                 "PRIMARY KEY(id)" +
                 ");";
             statement.executeUpdate(sql);

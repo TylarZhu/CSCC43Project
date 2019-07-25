@@ -16,9 +16,12 @@ public class Listings {
   private double price;
   private String city;
   private String country;
+  private boolean availability;
 
   private ArrayList<Amenities> amenities = new ArrayList<>();
   private ArrayList<ArrayList<Date>> unavailableTime = new ArrayList<>();
+  private ArrayList<Integer> renter_ins_history = new ArrayList<>();
+
 
   public Listings(int id,
                   double latitude,
@@ -28,7 +31,8 @@ public class Listings {
                   ListingType listing_type,
                   double price,
                   String city,
-                  String country) {
+                  String country,
+                  boolean availability) {
     this.id = id;
     this.latitude = latitude;
     this.longitude = longitude;
@@ -38,6 +42,7 @@ public class Listings {
     this.price = price;
     this.city = city;
     this.country = country;
+    this.availability = availability;
   }
 
   public void addAmenities(Amenities amenities) {
@@ -55,16 +60,21 @@ public class Listings {
     unavailableTime.add(fromToDate);
   }
 
-  public ArrayList<Amenities> getAmenities(){
-    return amenities;
+  public void setRenter_ins_history(int ins) {
+    renter_ins_history.add(ins);
   }
 
-  public boolean checkAvailability(Date from, Date to) {
-    for(ArrayList<Date> dates: unavailableTime) {
-      if(!(to.before(dates.get(0)) || from.after(dates.get(1)))) {
-        System.out.println("Listings is not available at this time range!");
-        return false;
+  public boolean checkBooking(Date from, Date to) {
+    if(this.availability) {
+      for (ArrayList<Date> dates : unavailableTime) {
+        if (!(to.before(dates.get(0)) || from.after(dates.get(1)))) {
+          System.out.println("Listings is been booked at this time range!");
+          return false;
+        }
       }
+    } else {
+      System.out.println("This listing is not availability right now!");
+      return false;
     }
     return true;
   }
@@ -80,6 +90,16 @@ public class Listings {
       }
     }
     this.price = price;
+  }
+
+  public void changeAvailability(boolean availability, Date today) {
+    for(ArrayList<Date> dates: unavailableTime) {
+      if (today.after(dates.get(0)) && today.before(dates.get(1))) {
+        System.out.println("You Cannot change availability! This list is still booking!");
+        return;
+      }
+    }
+    this.availability = availability;
   }
 
   public double getPrice(){
@@ -120,5 +140,17 @@ public class Listings {
 
   public ArrayList<ArrayList<Date>> getUnavailableTime(){
     return unavailableTime;
+  }
+
+  public boolean getAvailability() {
+    return availability;
+  }
+
+  public ArrayList<Amenities> getAmenities(){
+    return amenities;
+  }
+
+  public ArrayList<Integer> getRenter_ins_history(){
+    return renter_ins_history;
   }
 }
