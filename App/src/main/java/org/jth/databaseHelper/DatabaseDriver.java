@@ -40,17 +40,26 @@ public class DatabaseDriver {
                 "postal_code TEXT NOT NULL," +
                 "list_type TEXT NOT NULL," +
                 "price DOUBLE NOT NULL," +
-                "amenities TEXT NOT NULL," +
                 "city TEXT NOT NULL," +
                 "country TEXT NOT NULL," +
                 "PRIMARY KEY(id)" +
                 ");";
             statement.executeUpdate(sql);
 
+            sql = "CREATE TABLE IF NOT EXISTS listingsAmenities (" +
+                "id INT AUTO_INCREMENT," +
+                "list_id INT," +
+                "amenity TEXT," +
+                "PRIMARY KEY (id)," +
+                "FOREIGN KEY (list_id) REFERENCES listings(id)" +
+                ");";
+            statement.executeUpdate(sql);
+
             sql = "CREATE TABLE IF NOT EXISTS unavailable_times(" +
                 "id INT AUTO_INCREMENT," +
                 "list_id INT," +
-                "times TEXT NOT NULL," +
+                "fromTime TEXT NOT NULL," +
+                "toTime TEXT Not NULL," +
                 "PRIMARY KEY (id)," +
                 "FOREIGN KEY (list_id) REFERENCES listings(id)" +
                 ");";
@@ -161,6 +170,9 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE hosts;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE listingsAmenities;";
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE relationshipRenterHost";

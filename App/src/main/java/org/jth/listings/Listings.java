@@ -14,11 +14,11 @@ public class Listings {
   private String postal_code;
   private ListingType list_type;
   private double price;
-  private Amenities amenities;
   private String city;
   private String country;
 
-  private ArrayList<Date> unavailableTime;
+  private ArrayList<Amenities> amenities = new ArrayList<>();
+  private ArrayList<ArrayList<Date>> unavailableTime = new ArrayList<>();
 
   public Listings(int id,
                   double latitude,
@@ -27,7 +27,6 @@ public class Listings {
                   String postal_code,
                   ListingType listing_type,
                   double price,
-                  Amenities amenities,
                   String city,
                   String country) {
     this.id = id;
@@ -37,29 +36,43 @@ public class Listings {
     this.postal_code = postal_code;
     this.list_type = listing_type;
     this.price = price;
-    this.amenities = amenities;
     this.city = city;
     this.country = country;
   }
 
-  public void setUnavailableTime(ArrayList<Date> times) {
-    unavailableTime = times;
+  public void addAmenities(Amenities amenities) {
+    this.amenities.add(amenities);
   }
 
-  public ArrayList<Date> getUnavailableTime() {
-    return unavailableTime;
+  public void setUnavailableTime(Date from, Date to) {
+    ArrayList<Date> fromToDate = new ArrayList<>();
+    if(from.before(to)) {
+      fromToDate.add(from);
+      fromToDate.add(to);
+    } else {
+      System.out.println("Wrong Date! Cannot put the date backwards!");
+    }
+    unavailableTime.add(fromToDate);
   }
 
-  public boolean availability(Date from, Date to) {
-    for (Date day: unavailableTime) {
-      if(from.after(day) && to.before(day)) {
-        return false;
+  public ArrayList<Amenities> getAmenities(){
+    return amenities;
+  }
+
+  public void changeAvailability(Date from, Date to) {
+
+  }
+
+  public void changePrice(double price, Date today) {
+    for(ArrayList<Date> dates: unavailableTime) {
+      if(today.before(dates.get(0))||
+          today.equals(dates.get(0)) ||
+          (today.after(dates.get(0)) && today.before(dates.get(1))) ||
+          today.equals(dates.get(1))) {
+        System.out.println("you cannot change the price! This list is already be booked!");
+        return;
       }
     }
-    return true;
-  }
-
-  public void changePrice(double price, ) {
     this.price = price;
   }
 
@@ -77,5 +90,29 @@ public class Listings {
 
   public String getAddress() {
     return address;
+  }
+
+  public String getPostal_code(){
+    return postal_code;
+  }
+
+  public ListingType getList_type(){
+    return list_type;
+  }
+
+  public int getId(){
+    return id;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public String getCountry(){
+    return country;
+  }
+
+  public ArrayList<ArrayList<Date>> getUnavailableTime(){
+    return unavailableTime;
   }
 }

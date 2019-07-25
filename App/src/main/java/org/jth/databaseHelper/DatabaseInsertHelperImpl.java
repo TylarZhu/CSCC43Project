@@ -14,18 +14,18 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
 
   private DatabaseCheckDataHelperImpl databaseCheckDataHelper = new DatabaseCheckDataHelperImpl();
 
-  public static void main(String[] args) {
-    DatabaseInsertHelperImpl databaseSelectHelper = new DatabaseInsertHelperImpl();
-    databaseSelectHelper.insertComment(1004, 1001, "haha", 5);
-  }
+//  public static void main(String[] args) {
+//    DatabaseInsertHelperImpl databaseSelectHelper = new DatabaseInsertHelperImpl();
+//    databaseSelectHelper.insertComment(1004, 1001, "haha", 5);
+//  }
 
   @Override
   public void insertListings(double latitude, double longitude, String address, String postal_code,
-                             ListingType listingType, double price, Amenities amenities, String city, String country) {
+                             ListingType listingType, double price, String city, String country) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "INSERT INTO listings (latitude, longitude, address, postal_code, list_type, price, amenities, city, country)" +
-          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+      String sql = "INSERT INTO listings (latitude, longitude, address, postal_code, list_type, price, city, country)" +
+          "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setDouble(1, latitude);
       preparedStatement.setDouble(2, longitude);
@@ -33,14 +33,30 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       preparedStatement.setString(4, postal_code);
       preparedStatement.setString(5, listingType.name());
       preparedStatement.setDouble(6, price);
-      preparedStatement.setString(7,amenities.name());
-      preparedStatement.setString(8,city);
-      preparedStatement.setString(9,country);
+      preparedStatement.setString(7,city);
+      preparedStatement.setString(8,country);
       preparedStatement.executeUpdate();
       preparedStatement.close();
       connection.close();
     } catch (Exception e) {
       System.out.println("Something went wrong with insert listing! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void insertAmenities(int list_id, Amenities amenities) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = "INSERT listingsAmenities (list_id, amenity) VALUES (?, ?);";
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setInt(1, list_id);
+      preparedStatement.setString(2, amenities.name());
+      preparedStatement.executeUpdate();
+      preparedStatement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.out.println("Something went wrong with insert Amenities! see below details: ");
       e.printStackTrace();
     }
   }
@@ -218,13 +234,14 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
 
 
   @Override
-  public void insertUnavailableTimes(int list_id, Date date) {
+  public void insertUnavailableTimes(int list_id, Date fromDate, Date toDate) {
     try {
       Connection connection = connectingToDatabase();
-      String sql = "INSERT INTO unavailable_times (list_id, times) VALUES (?, ?);";
+      String sql = "INSERT INTO unavailable_times (list_id, fromTime, toTime) VALUES (?, ?, ?);";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setInt(1, list_id);
-      preparedStatement.setString(2, parseDate(date));
+      preparedStatement.setString(2, parseDate(fromDate));
+      preparedStatement.setString(3, parseDate(toDate));
       preparedStatement.executeUpdate();
       preparedStatement.close();
       connection.close();

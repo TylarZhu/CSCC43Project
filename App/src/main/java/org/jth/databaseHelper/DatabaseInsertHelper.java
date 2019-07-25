@@ -6,8 +6,11 @@ import java.util.Date;
 
 public interface DatabaseInsertHelper {
   void insertListings(double latitude, double longitude, String address, String postal_code,
-                      ListingType listingType, double price, Amenities amenities, String city, String country);
-  void insertUnavailableTimes(int list_id, Date date);
+                      ListingType listingType, double price, String city, String country);
+
+  void insertAmenities(int list_id, Amenities amenities);
+
+  void insertUnavailableTimes(int list_id, Date fromDate, Date toDate);
 
   //void insertUsers(int ins, String firstName, String lastName, String address, String postal_code, Date date_of_birth, String occupation);
 

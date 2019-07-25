@@ -31,19 +31,28 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
             resultSet.getString("postal_code"),
             ListingType.valueOf(resultSet.getString("list_type")),
             resultSet.getDouble("price"),
-            Amenities.valueOf(resultSet.getString("amenities")),
             resultSet.getString("city"),
             resultSet.getString("country"));
+
         String sql = "SELECT * FROM unavailable_times WHERE list_id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, resultSet.getInt("id"));
         ResultSet listingsUnavailableTime = preparedStatement.executeQuery();
-        ArrayList<Date> unavailableTimes = new ArrayList<>();
         while (listingsUnavailableTime.next()) {
-          unavailableTimes.add(parseStringToDate(listingsUnavailableTime.getString("times")));
+          listing.setUnavailableTime(parseStringToDate(listingsUnavailableTime.getString("fromTime")),
+              parseStringToDate(listingsUnavailableTime.getString("toTime")));
         }
-        listing.setUnavailableTime(unavailableTimes);
         listingsUnavailableTime.close();
+
+        sql = "SELECT * FROM listingsAmenities WHERE list_id = ?";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, resultSet.getInt("id"));
+        ResultSet listAmenities = preparedStatement.executeQuery();
+        while(listAmenities.next()) {
+          listing.addAmenities(Amenities.valueOf(listAmenities.getString("amenity")));
+        }
+        listAmenities.close();
+
         listings.add(listing);
       }
       resultSet.close();

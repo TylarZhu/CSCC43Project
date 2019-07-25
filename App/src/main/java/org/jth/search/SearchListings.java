@@ -10,6 +10,8 @@ public class SearchListings {
   private ArrayList<Listings> listings = null;
   private DatabaseSelectHelperImpl databaseSelectHelperImpl = new DatabaseSelectHelperImpl();
 
+
+
   public ArrayList<Listings> getSearchListings() {
     return listings;
   }
