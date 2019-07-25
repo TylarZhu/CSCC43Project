@@ -9,12 +9,18 @@ public class DatabaseDeleteHelperImpl implements DatabaseDeleteHelper {
 
   private DatabaseCheckDataHelperImpl databaseCheckDataHelper = new DatabaseCheckDataHelperImpl();
 
+  public static void main(String[] args) {
+    DatabaseDeleteHelper databaseDeleteHelper = new DatabaseDeleteHelperImpl();
+    databaseDeleteHelper.deleteListingById(1004, 3);
+  }
+
   @Override
   public void deleteListingById(int ins, int id) {
     try {
       Connection connection = connectingToDatabase();
-      if(databaseCheckDataHelper.checkUserOrListExsits(2, ins) &&
-          databaseCheckDataHelper.checkUserOrListExsits(3, id)) {
+      if(databaseCheckDataHelper.checkUserOrListExsits(ins, 2) &&
+          databaseCheckDataHelper.checkUserOrListExsits(id, 3) &&
+          databaseCheckDataHelper.checkHostOwnList(ins, id)) {
         String sql = "DELETE FROM unavailable_times WHERE list_id = ?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);
@@ -25,16 +31,24 @@ public class DatabaseDeleteHelperImpl implements DatabaseDeleteHelper {
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
 
-        sql = "DELETE FROM rentalHistory WHERE list_id = ?;";
+        sql = "DELETE FROM futureBooking WHERE list_id = ?;";
         preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
 
-        sql = "DELETE FROM listings WHERE id = 1;";
+        sql = "DELETE FROM relationshipRenterHost WHERE list_id = ?;";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+
+        sql = "DELETE FROM listings WHERE id = ?;";
         preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
         preparedStatement.close();
+        connection.close();
+      } else {
+        System.out.println("User is not a host or listings does not exists!");
         connection.close();
       }
     } catch (Exception e) {

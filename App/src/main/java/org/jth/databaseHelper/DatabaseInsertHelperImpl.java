@@ -14,10 +14,10 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
 
   private DatabaseCheckDataHelperImpl databaseCheckDataHelper = new DatabaseCheckDataHelperImpl();
 
-//  public static void main(String[] args) {
-//    DatabaseInsertHelperImpl databaseSelectHelper = new DatabaseInsertHelperImpl();
-//    databaseSelectHelper.insertHostOwnListings(1004, 2);
-//  }
+  public static void main(String[] args) {
+    DatabaseInsertHelperImpl databaseSelectHelper = new DatabaseInsertHelperImpl();
+    databaseSelectHelper.insertComment(1004, 1001, "haha", 5);
+  }
 
   @Override
   public void insertListings(double latitude, double longitude, String address, String postal_code,
@@ -109,21 +109,24 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
 
 
   @Override
-  public void insertRelationshipRenterHost(int renterIns, int hostIns) {
+  public void insertRelationshipRenterHost(int renterIns, int hostIns, int listId) {
     try {
       Connection connection = connectingToDatabase();
       if (databaseCheckDataHelper.checkUserOrListExsits(renterIns, 1) &&
-          databaseCheckDataHelper.checkUserOrListExsits(hostIns, 2)) {
-        String sql = "INSERT relationshipRenterHost (renter_ins, host_ins) VALUES (?, ?);";
+          databaseCheckDataHelper.checkUserOrListExsits(hostIns, 2) &&
+          databaseCheckDataHelper.checkUserOrListExsits(listId, 3) &&
+          databaseCheckDataHelper.checkHostOwnList(hostIns, listId)) {
+        String sql = "INSERT relationshipRenterHost (renter_ins, host_ins, list_id) VALUES (?, ?, ?);";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, renterIns);
         preparedStatement.setInt(2, hostIns);
+        preparedStatement.setInt(3, listId);
         preparedStatement.executeUpdate();
         preparedStatement.close();
         connection.close();
       } else {
         connection.close();
-        System.out.println("Wrong social insurance number! no such user exists!");
+        System.out.println("Please check renter or host social insurance number");
       }
     } catch(Exception e){
         System.out.println("Something went wrong with insert Relationship Renter Host! see below details: ");
@@ -211,30 +214,6 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       System.out.println("Something went wrong with insert future booking! see below details: ");
       e.printStackTrace();
     }
-  }
-
-  @Override
-  public void insertRentalHistory(int renterIns, int listId) {
-    try {
-      Connection connection = connectingToDatabase();
-      if(databaseCheckDataHelper.checkUserOrListExsits(renterIns, 1) &&
-              databaseCheckDataHelper.checkUserOrListExsits(listId, 3)) {
-        String sql = "INSERT rentalHistory (renter_ins, list_id) VALUES (?, ?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, renterIns);
-        preparedStatement.setInt(2,listId);
-        preparedStatement.executeUpdate();
-        preparedStatement.close();
-        connection.close();
-      } else {
-        connection.close();
-        System.out.println("Listing or renters does not exists!");
-      }
-    } catch (Exception e) {
-      System.out.println("Something went wrong with insert rental history! see below details: ");
-      e.printStackTrace();
-    }
-
   }
 
 
