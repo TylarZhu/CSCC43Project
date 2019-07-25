@@ -22,4 +22,21 @@ public class DatabaseUpdateHelperImpl implements DatabaseUpdateHelper{
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void updateAvailability(int list_id, boolean availability) {
+        try {
+            Connection connection = connectingToDatabase();
+            String sql = "UPDATE listings SET availability = ? WHERE id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setBoolean(1, availability);
+            preparedStatement.setInt(2, list_id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+        } catch (Exception e) {
+            System.out.println("Something went wrong with update availability! see below details: ");
+            e.printStackTrace();
+        }
+    }
 }
