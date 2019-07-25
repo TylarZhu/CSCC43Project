@@ -50,6 +50,19 @@ public class Listings {
     return unavailableTime;
   }
 
+  public boolean availability(Date from, Date to) {
+    for (Date day: unavailableTime) {
+      if(from.after(day) && to.before(day)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public void changePrice(double price) {
+    this.price = price;
+  }
+
   public double getPrice(){
     return price;
   }

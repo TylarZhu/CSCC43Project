@@ -12,7 +12,7 @@ public class Main {
     try {
       DatabaseDriver databaseDriver = new DatabaseDriver();
       Connection connection = DatabaseDriver.connectingToDatabase();
-      DatabaseDriver.initializeDatabase(connection);
+      DatabaseDriver.dropDatabase(connection);
 
     } catch (Exception e) {
       e.printStackTrace();
