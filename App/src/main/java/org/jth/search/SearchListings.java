@@ -4,6 +4,7 @@ import org.jth.listings.Listings;
 import org.jth.databaseHelper.DatabaseSelectHelperImpl;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SearchListings {
   private ArrayList<Listings> listings = null;
