@@ -59,7 +59,7 @@ public class Listings {
     return true;
   }
 
-  public void changePrice(double price) {
+  public void changePrice(double price, ) {
     this.price = price;
   }
 
