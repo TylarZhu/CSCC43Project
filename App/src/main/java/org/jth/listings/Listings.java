@@ -59,8 +59,14 @@ public class Listings {
     return amenities;
   }
 
-  public void changeAvailability(Date from, Date to) {
-
+  public boolean checkAvailability(Date from, Date to) {
+    for(ArrayList<Date> dates: unavailableTime) {
+      if(!(to.before(dates.get(0)) || from.after(dates.get(1)))) {
+        System.out.println("Listings is not available at this time range!");
+        return false;
+      }
+    }
+    return true;
   }
 
   public void changePrice(double price, Date today) {

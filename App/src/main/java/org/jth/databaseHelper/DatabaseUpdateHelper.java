@@ -1,8 +1,5 @@
 package org.jth.databaseHelper;
 
 public interface DatabaseUpdateHelper {
-    void updatePrice();
-    void updateAvaliablity();
-
-
+    void updatePrice(int list_id, double price );
 }
