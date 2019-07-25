@@ -133,16 +133,6 @@ public class DatabaseDriver {
 
             statement.executeUpdate(sql);
 
-            sql = "CREATE TABLE IF NOT EXISTS rentalHistory(" +
-                    "id INT AUTO_INCREMENT," +
-                    "host_ins INT," +
-                    "list_id INT," +
-                    "PRIMARY KEY (id)," +
-                    "FOREIGN KEY (host_ins) REFERENCES users(social_insurance_number)," +
-                    "FOREIGN KEY (list_id) REFERENCES listings(id)" +
-                    ");";
-            statement.executeUpdate(sql);
-
             statement.close();
             System.out.println("Initialize database success!");
             return connection;
@@ -153,7 +143,7 @@ public class DatabaseDriver {
         }
     }
 
-    private static Connection dropDatabase(Connection connection) {
+    public static Connection dropDatabase(Connection connection) {
         try {
             Statement statement = connection.createStatement();
             statement = connection.createStatement();
@@ -162,9 +152,6 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE hostOwnListings;";
-            statement.executeUpdate(sql);
-
-            sql = "DROP TABLE rentalHistory;";
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE futureBooking;";

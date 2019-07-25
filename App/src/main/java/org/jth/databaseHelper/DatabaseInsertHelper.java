@@ -24,6 +24,4 @@ public interface DatabaseInsertHelper {
   void insertHostOwnListings(int hostIns, int listId);
 
   void insertFutureBooking(int renterIns, int listId);
-
-  void insertRentalHistory(int host_ins, int listId);
 }

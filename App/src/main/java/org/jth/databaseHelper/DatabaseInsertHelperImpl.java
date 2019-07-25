@@ -216,30 +216,6 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
     }
   }
 
-  @Override
-  public void insertRentalHistory(int host_ins, int listId) {
-    try {
-      Connection connection = connectingToDatabase();
-      if(databaseCheckDataHelper.checkUserOrListExsits(host_ins, 1) &&
-              databaseCheckDataHelper.checkUserOrListExsits(listId, 3)) {
-        String sql = "INSERT rentalHistory (host_ins, list_id) VALUES (?, ?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, host_ins);
-        preparedStatement.setInt(2,listId);
-        preparedStatement.executeUpdate();
-        preparedStatement.close();
-        connection.close();
-      } else {
-        connection.close();
-        System.out.println("Listing or renters does not exists!");
-      }
-    } catch (Exception e) {
-      System.out.println("Something went wrong with insert rental history! see below details: ");
-      e.printStackTrace();
-    }
-
-  }
-
 
   @Override
   public void insertUnavailableTimes(int list_id, Date date) {

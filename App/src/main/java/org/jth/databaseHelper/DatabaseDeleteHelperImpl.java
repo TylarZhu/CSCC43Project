@@ -31,7 +31,7 @@ public class DatabaseDeleteHelperImpl implements DatabaseDeleteHelper {
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
 
-        sql = "DELETE FROM rentalHistory WHERE list_id = ?;";
+        sql = "DELETE FROM futureBooking WHERE list_id = ?;";
         preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
