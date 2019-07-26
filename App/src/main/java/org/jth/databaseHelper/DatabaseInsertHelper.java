@@ -24,6 +24,8 @@ public interface DatabaseInsertHelper {
 
   void insertComment(int fromIns, int toIns, String comment, int rate);
 
+  void insertCommentListing(int fromIns, int list_id, String comment, int rate);
+
   void insertHostOwnListings(int hostIns, int listId);
 
   void insertFutureBooking(int renterIns, int listId);

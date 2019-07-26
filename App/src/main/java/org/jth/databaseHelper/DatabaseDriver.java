@@ -110,6 +110,18 @@ public class DatabaseDriver {
                 ");";
             statement.executeUpdate(sql);
 
+            sql = "CREATE TABLE IF NOT EXISTS commentOnListingTable(" +
+                "comment_id INT AUTO_INCREMENT," +
+                "usrIns INT," +
+                "listId INT," +
+                "content TEXT NOT NULL," +
+                "rate INT NOT NULL," +
+                "PRIMARY KEY (comment_id)," +
+                "FOREIGN KEY (usrIns) REFERENCES users(social_insurance_number)," +
+                "FOREIGN KEY (listId) REFERENCES listings(id)" +
+                ");";
+            statement.executeUpdate(sql);
+
             sql = "CREATE TABLE IF NOT EXISTS relationshipRenterHost(" +
                 "relation_id INT AUTO_INCREMENT," +
                 "renter_ins INT," +
@@ -180,6 +192,9 @@ public class DatabaseDriver {
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE commentTable;";
+            statement.executeUpdate(sql);
+
+            sql = "DROP TABLE commentOnListingTable;";
             statement.executeUpdate(sql);
 
             sql = "DROP TABLE users;";

@@ -127,4 +127,32 @@ public class DatabaseCheckDataHelperImpl implements DatabaseCheckDataHelper {
     }
   }
 
+  @Override
+  public boolean checkListingRenterRelation(int list_id, int renterIns) {
+    try{
+      String sql = null;
+      Connection connection = connectingToDatabase();
+      sql = "SELECT EXISTS(SELECT * FROM relationshipRenterHost WHERE list_id = ? AND renter_ins = ?);";
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setInt(1, list_id);
+      preparedStatement.setInt(2, renterIns);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      if(resultSet.getInt(1) == 1){
+        preparedStatement.close();
+        connection.close();
+        return true;
+      }else{
+        preparedStatement.close();
+        connection.close();
+        return false;
+      }
+    }catch (Exception e){
+      System.out.println("something went wrong with check Listing Renter Relation! see below details:");
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+
 }

@@ -187,6 +187,33 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
   }
 
   @Override
+  public void insertCommentListing(int fromIns, int list_id, String comment, int rate) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = null;
+      if(databaseCheckDataHelper.checkUserOrListExsits(fromIns, 1) &&
+          databaseCheckDataHelper.checkUserOrListExsits(list_id, 3) &&
+          databaseCheckDataHelper.checkListingRenterRelation(list_id, fromIns)) {
+        sql = "INSERT commentOnListingTable (usrIns, listId, content, rate) VALUES (?, ?, ?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, fromIns);
+        preparedStatement.setInt(2, list_id);
+        preparedStatement.setString(3, comment);
+        preparedStatement.setInt(4, rate);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+      } else {
+        connection.close();
+        System.out.println("Wrong social insurance number or listing does not exists or renter does not have relation!");
+      }
+    } catch (Exception e) {
+      System.out.println("Something went wrong with insert Comment Listing! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
   public void insertHostOwnListings(int hostIns, int listId) {
     try {
       Connection connection = connectingToDatabase();

@@ -1,20 +1,14 @@
 package org.jth.app;
 
 import org.jth.databaseHelper.*;
-import org.jth.fields.Amenities;
-import org.jth.fields.ListingType;
-import org.jth.listings.Listings;
-import org.jth.search.SearchListings;
-import org.jth.user.Comment;
-import org.jth.user.Hosts;
+import org.jth.comment.Comment;
 import org.jth.user.RenterHostListingRelationship;
-import org.jth.user.Users;
 
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 import static org.jth.fields.Amenities.*;
 import static org.jth.fields.ListingType.*;
@@ -25,12 +19,20 @@ public class Main {
 
   public static void main(String[] args) {
     try {
+//      switch (menu()) {
+//        case 1:
+//          Connection connection = DatabaseDriver.connectingToDatabase();
+//          DatabaseDriver.initializeDatabase(connection);
+//          DatabaseDriver.dropDatabase(connection);
+//          break;
+//      }
+
 //      DatabaseDriver databaseDriver = new DatabaseDriver();
 //      Connection connection = DatabaseDriver.connectingToDatabase();
 //      DatabaseDriver.initializeDatabase(connection);
 //      DatabaseDriver.dropDatabase(connection);
 //
-//      DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
+      DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
 //      databaseInsertHelper.insertListings(11, 11, "70 TOWN CENTER", "0B2 0P3",
 //          APARTMENT, 1, "TORONTO", "CANANDA", true);
 //      databaseInsertHelper.insertAmenities(1, KITCHEN);
@@ -78,7 +80,7 @@ public class Main {
 
       /** database search helper**/
       /** test for search listings by data range**/
-      DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
+//      DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
 //      databaseSelectHelper.selectAllListings(1);
 //      ArrayList<Listings> thisListings = databaseSelectHelper.getListings();
 //      SearchListings search = new SearchListings();
@@ -135,7 +137,7 @@ public class Main {
 //      databaseInsertHelper.insertRelationshipRenterHost(1005, 1001, 4);
 //      databaseInsertHelper.insertRelationshipRenterHost(1006, 1002, 2);
 
-
+      databaseInsertHelper.insertCommentListing(1004, 3, "haha", 5);
 
 //      databaseSelectHelper.selectAllUsers(2);
 //      ArrayList<Users> hostList = databaseSelectHelper.getUsers();
@@ -148,9 +150,9 @@ public class Main {
 //        }
 //      }
 
-      databaseSelectHelper.selectRelation();
-      RenterHostListingRelationship renterHostListingRelationship = databaseSelectHelper.getRenterHostListingRelationship();
-      Comment comment = new Comment(1004, 1001, "hahaha", 5, renterHostListingRelationship);
+//      databaseSelectHelper.selectRelation();
+//      RenterHostListingRelationship renterHostListingRelationship = databaseSelectHelper.getRenterHostListingRelationship();
+//      Comment comment = new Comment(1004, 1001, "hahaha", 5, renterHostListingRelationship);
 
 
 //      DatabaseUpdateHelperImpl databaseUpdateHelper = new DatabaseUpdateHelperImpl();
@@ -159,6 +161,15 @@ public class Main {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private static int menu() {
+    System.out.println("Welcome!");
+    System.out.println("Renter -- 1");
+    System.out.println("Host -- 2");
+    System.out.println("******************");
+    Scanner input = new Scanner(System.in);
+    return input.nextInt();
   }
 
   private static Date parseStringToDate(String date) {

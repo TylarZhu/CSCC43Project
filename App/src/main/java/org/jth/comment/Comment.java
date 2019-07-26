@@ -1,4 +1,6 @@
-package org.jth.user;
+package org.jth.comment;
+
+import org.jth.user.RenterHostListingRelationship;
 
 import java.util.ArrayList;
 

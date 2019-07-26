@@ -5,5 +5,5 @@ public interface DatabaseCheckDataHelper {
   boolean checkCommentTarget(int fromIns, int toIns, int choice);
   boolean checkHostOwnList(int ins, int id);
   boolean checkListingStatus(int id);
-
+  boolean checkListingRenterRelation(int list_id, int renterIns);
 }

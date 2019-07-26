@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.jth.comment.Comment;
+import org.jth.comment.CommentToListings;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
@@ -20,22 +22,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   private ArrayList<Users> users = new ArrayList<>();
   private ArrayList<Comment> comments = new ArrayList<>();
   private RenterHostListingRelationship renterHostListingRelationship = new RenterHostListingRelationship();
-
-  private void loadComment(ResultSet resultSet, Connection connection) {
-    try {
-      while(resultSet.next()) {
-        comments.add(new Comment(resultSet.getInt("comment_id"),
-            resultSet.getInt("fromUsr"),
-            resultSet.getInt("toUsr"),
-            resultSet.getString("content"),
-            resultSet.getInt("rate")));
-      }
-      resultSet.close();
-    } catch (Exception e) {
-      System.out.println("Something went wrong with load listings from DB! see below details: ");
-      e.printStackTrace();
-    }
-  }
+  private ArrayList<CommentToListings> commentToListings = new ArrayList<>();
 
   private void loadListingsFromDB(ResultSet resultSet, Connection connection){
     try {
@@ -282,7 +269,37 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       String sql = "SELECT * FROM commentTable;";
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(sql);
-      loadComment(resultSet, connection);
+      while(resultSet.next()) {
+        comments.add(new Comment(resultSet.getInt("comment_id"),
+            resultSet.getInt("fromUsr"),
+            resultSet.getInt("toUsr"),
+            resultSet.getString("content"),
+            resultSet.getInt("rate")));
+      }
+      resultSet.close();
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.out.println("Something went wrong with select All Comment! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void selectAllCommentListings() {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = "SELECT * FROM commentOnListingTable;";
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(sql);
+      while(resultSet.next()) {
+        commentToListings.add(new CommentToListings(resultSet.getInt("comment_id"),
+            resultSet.getInt("usrIns"),
+            resultSet.getInt("listId"),
+            resultSet.getString("content"),
+            resultSet.getInt("rate")));
+      }
+      resultSet.close();
       statement.close();
       connection.close();
     } catch (Exception e) {
