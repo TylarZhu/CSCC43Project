@@ -28,6 +28,7 @@ public class Main {
 //      DatabaseDriver databaseDriver = new DatabaseDriver();
 //      Connection connection = DatabaseDriver.connectingToDatabase();
 //      DatabaseDriver.initializeDatabase(connection);
+<<<<<<< Updated upstream
 //      DatabaseDriver.dropDatabase(connection);
 //
 //      DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
