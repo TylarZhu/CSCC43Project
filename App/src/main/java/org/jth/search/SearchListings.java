@@ -1,9 +1,6 @@
 package org.jth.search;
 
-
-import org.jth.fields.Amenities;
 import org.jth.listings.Listings;
-import org.jth.databaseHelper.DatabaseSelectHelperImpl;
 
 import java.util.ArrayList;
 import java.util.Date;
