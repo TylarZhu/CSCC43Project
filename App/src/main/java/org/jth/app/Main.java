@@ -5,7 +5,9 @@ import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
 import org.jth.search.SearchListings;
+import org.jth.user.Comment;
 import org.jth.user.Hosts;
+import org.jth.user.RenterHostListingRelationship;
 import org.jth.user.Users;
 
 import java.sql.Connection;
@@ -26,8 +28,8 @@ public class Main {
 //      DatabaseDriver databaseDriver = new DatabaseDriver();
 //      Connection connection = DatabaseDriver.connectingToDatabase();
 //      DatabaseDriver.initializeDatabase(connection);
-      //DatabaseDriver.dropDatabase(connection);
-
+//      DatabaseDriver.dropDatabase(connection);
+//
 //      DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
 //      databaseInsertHelper.insertListings(11, 11, "70 TOWN CENTER", "0B2 0P3",
 //          APARTMENT, 1, "TORONTO", "CANANDA", true);
@@ -76,34 +78,34 @@ public class Main {
 
       /** database search helper**/
       /** test for search listings by data range**/
-//      DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
+      DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
 //      databaseSelectHelper.selectAllListings(1);
 //      ArrayList<Listings> thisListings = databaseSelectHelper.getListings();
 //      SearchListings search = new SearchListings();
 //      search.getListingsByDataRange(parseStringToDate("2018-06-16"), parseStringToDate("2018-06-19"), thisListings);
 
       /** test for search listings by post-code**/
-      DatabaseSelectHelperImpl databaseSelectHelper2 = new DatabaseSelectHelperImpl();
-      databaseSelectHelper2.selectAllListings(1);
-      ArrayList<Listings> thisListings2 = databaseSelectHelper2.getListings();
-      SearchListings search2 = new SearchListings();
-      search2.getListingsAmenitiesByPostcode("0B2 0P6",thisListings2);
-
-      for(Listings listings: thisListings2) {
-        System.out.println("***********************");
-        System.out.println(listings.getId());
-        System.out.println(listings.getPrice());
-        System.out.println(listings.getAddress());
-        System.out.println(listings.getAvailability());
-        for(Amenities amenities: listings.getAmenities()) {
-          System.out.println(amenities.name());
-        }
-        for(ArrayList<Date> dates: listings.getUnavailableTime()){
-          for(Date date: dates) {
-            System.out.println(date.toString());
-          }
-        }
-      }
+//      DatabaseSelectHelperImpl databaseSelectHelper2 = new DatabaseSelectHelperImpl();
+//      databaseSelectHelper2.selectAllListings(1);
+//      ArrayList<Listings> thisListings2 = databaseSelectHelper2.getListings();
+//      SearchListings search2 = new SearchListings();
+//      search2.getListingsAmenitiesByPostcode("0B2 0P6",thisListings2);
+//
+//      for(Listings listings: thisListings2) {
+//        System.out.println("***********************");
+//        System.out.println(listings.getId());
+//        System.out.println(listings.getPrice());
+//        System.out.println(listings.getAddress());
+//        System.out.println(listings.getAvailability());
+//        for(Amenities amenities: listings.getAmenities()) {
+//          System.out.println(amenities.name());
+//        }
+//        for(ArrayList<Date> dates: listings.getUnavailableTime()){
+//          for(Date date: dates) {
+//            System.out.println(date.toString());
+//          }
+//        }
+//      }
 
 //      databaseInsertHelper.insertHosts(1001,"Xingyuan", "Zhu", "70 Town Center",
 //          "M1P 0B2", parseStringToDate("1998-12-01"), "student");
@@ -133,6 +135,8 @@ public class Main {
 //      databaseInsertHelper.insertRelationshipRenterHost(1005, 1001, 4);
 //      databaseInsertHelper.insertRelationshipRenterHost(1006, 1002, 2);
 
+
+
 //      databaseSelectHelper.selectAllUsers(2);
 //      ArrayList<Users> hostList = databaseSelectHelper.getUsers();
 
@@ -143,6 +147,10 @@ public class Main {
 //          System.out.println(listing);
 //        }
 //      }
+
+      databaseSelectHelper.selectRelation();
+      RenterHostListingRelationship renterHostListingRelationship = databaseSelectHelper.getRenterHostListingRelationship();
+      Comment comment = new Comment(1004, 1001, "hahaha", 5, renterHostListingRelationship);
 
 
 //      DatabaseUpdateHelperImpl databaseUpdateHelper = new DatabaseUpdateHelperImpl();

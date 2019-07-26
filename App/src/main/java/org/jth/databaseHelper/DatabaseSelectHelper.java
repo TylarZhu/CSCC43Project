@@ -9,4 +9,5 @@ public interface DatabaseSelectHelper {
   void selectListingsByAddress(String address, int choice);
   void selectAllUsers(int choice);
   void selectAllComment();
+  void selectRelation();
 }

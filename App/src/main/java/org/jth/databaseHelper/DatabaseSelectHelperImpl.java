@@ -10,10 +10,7 @@ import java.util.Date;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
-import org.jth.user.Comment;
-import org.jth.user.Hosts;
-import org.jth.user.Renters;
-import org.jth.user.Users;
+import org.jth.user.*;
 
 import static org.jth.databaseHelper.DatabaseDriver.*;
 
@@ -22,6 +19,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   private ArrayList<Listings> listings = new ArrayList<>();
   private ArrayList<Users> users = new ArrayList<>();
   private ArrayList<Comment> comments = new ArrayList<>();
+  private RenterHostListingRelationship renterHostListingRelationship = new RenterHostListingRelationship();
 
   private void loadComment(ResultSet resultSet, Connection connection) {
     try {
@@ -32,6 +30,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
             resultSet.getString("content"),
             resultSet.getInt("rate")));
       }
+      resultSet.close();
     } catch (Exception e) {
       System.out.println("Something went wrong with load listings from DB! see below details: ");
       e.printStackTrace();
@@ -70,15 +69,6 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
           listing.addAmenities(Amenities.valueOf(listAmenities.getString("amenity")));
         }
         listAmenities.close();
-
-        sql = "SELECT renter_ins FROM relationshipRenterHost WHERE list_id = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, resultSet.getInt("id"));
-        ResultSet listRenters = preparedStatement.executeQuery();
-        while(listRenters.next()) {
-          listing.setRenter_ins_history(listRenters.getInt("renter_ins"));
-        }
-        listRenters.close();
 
         listings.add(listing);
       }
@@ -166,6 +156,10 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
 
   public ArrayList<Comment> getComments() {
     return comments;
+  }
+
+  public RenterHostListingRelationship getRenterHostListingRelationship() {
+    return renterHostListingRelationship;
   }
 
   @Override
@@ -290,10 +284,30 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       ResultSet resultSet = statement.executeQuery(sql);
       loadComment(resultSet, connection);
       statement.close();
-      resultSet.close();
       connection.close();
     } catch (Exception e) {
       System.out.println("Something went wrong with select All Comment! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void selectRelation() {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = "SELECT * FROM relationshipRenterHost;";
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(sql);
+      while(resultSet.next()) {
+        renterHostListingRelationship.addRelationship(resultSet.getInt("renter_ins"),
+            resultSet.getInt("host_ins"),
+            resultSet.getInt("list_id"));
+      }
+      statement.close();
+      resultSet.close();
+      connection.close();
+    } catch (Exception e) {
+      System.out.println("Something went wrong with select Relation! see below details: ");
       e.printStackTrace();
     }
   }

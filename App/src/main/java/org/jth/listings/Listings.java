@@ -20,7 +20,6 @@ public class Listings {
 
   private ArrayList<Amenities> amenities = new ArrayList<>();
   private ArrayList<ArrayList<Date>> unavailableTime = new ArrayList<>();
-  private ArrayList<Integer> renter_ins_history = new ArrayList<>();
 
 
   public Listings(int id,
@@ -58,10 +57,6 @@ public class Listings {
       System.out.println("Wrong Date! Cannot put the date backwards!");
     }
     unavailableTime.add(fromToDate);
-  }
-
-  public void setRenter_ins_history(int ins) {
-    renter_ins_history.add(ins);
   }
 
   public boolean checkBooking(Date from, Date to) {
@@ -150,7 +145,4 @@ public class Listings {
     return amenities;
   }
 
-  public ArrayList<Integer> getRenter_ins_history(){
-    return renter_ins_history;
-  }
 }
