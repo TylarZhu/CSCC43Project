@@ -8,4 +8,5 @@ public interface DatabaseSelectHelper {
   void selectListingsByLatitudeLongitude(double latitude, double longitude, double distance);
   void selectListingsByAddress(String address, int choice);
   void selectAllUsers(int choice);
+  void selectAllComment();
 }

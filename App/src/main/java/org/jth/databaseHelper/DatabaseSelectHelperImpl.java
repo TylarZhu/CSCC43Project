@@ -10,6 +10,7 @@ import java.util.Date;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
+import org.jth.user.Comment;
 import org.jth.user.Hosts;
 import org.jth.user.Renters;
 import org.jth.user.Users;
@@ -20,6 +21,22 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
 
   private ArrayList<Listings> listings = new ArrayList<>();
   private ArrayList<Users> users = new ArrayList<>();
+  private ArrayList<Comment> comments = new ArrayList<>();
+
+  private void loadComment(ResultSet resultSet, Connection connection) {
+    try {
+      while(resultSet.next()) {
+        comments.add(new Comment(resultSet.getInt("comment_id"),
+            resultSet.getInt("fromUsr"),
+            resultSet.getInt("toUsr"),
+            resultSet.getString("content"),
+            resultSet.getInt("rate")));
+      }
+    } catch (Exception e) {
+      System.out.println("Something went wrong with load listings from DB! see below details: ");
+      e.printStackTrace();
+    }
+  }
 
   private void loadListingsFromDB(ResultSet resultSet, Connection connection){
     try {
@@ -147,6 +164,10 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     return users;
   }
 
+  public ArrayList<Comment> getComments() {
+    return comments;
+  }
+
   @Override
   public void selectAllListings(int choice) {
     try {
@@ -256,6 +277,23 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
       statement.close();
     } catch (Exception e) {
       System.out.println("Something went wrong with select All Renters! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void selectAllComment() {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = "SELECT * FROM commentTable;";
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(sql);
+      loadComment(resultSet, connection);
+      statement.close();
+      resultSet.close();
+      connection.close();
+    } catch (Exception e) {
+      System.out.println("Something went wrong with select All Comment! see below details: ");
       e.printStackTrace();
     }
   }
