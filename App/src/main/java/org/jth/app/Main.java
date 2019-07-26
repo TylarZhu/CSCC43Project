@@ -4,6 +4,7 @@ import org.jth.databaseHelper.*;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
+import org.jth.search.SearchListings;
 import org.jth.user.Hosts;
 import org.jth.user.Users;
 
@@ -25,6 +26,7 @@ public class Main {
 //      DatabaseDriver databaseDriver = new DatabaseDriver();
 //      Connection connection = DatabaseDriver.connectingToDatabase();
 //      DatabaseDriver.initializeDatabase(connection);
+      //DatabaseDriver.dropDatabase(connection);
 
 //      DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
 //      databaseInsertHelper.insertListings(11, 11, "70 TOWN CENTER", "0B2 0P3",
@@ -72,11 +74,22 @@ public class Main {
 //      databaseInsertHelper.insertUnavailableTimes(4, parseStringToDate("2018-11-12"), parseStringToDate("2018-11-20"));
 //      databaseInsertHelper.insertUnavailableTimes(4, parseStringToDate("2018-05-17"), parseStringToDate("2018-05-18"));
 
-      DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
-      databaseSelectHelper.selectAllListings(1);
-      ArrayList<Listings> thisListings = databaseSelectHelper.getListings();
+      /** database search helper**/
+      /** test for search listings by data range**/
+//      DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
+//      databaseSelectHelper.selectAllListings(1);
+//      ArrayList<Listings> thisListings = databaseSelectHelper.getListings();
+//      SearchListings search = new SearchListings();
+//      search.getListingsByDataRange(parseStringToDate("2018-06-16"), parseStringToDate("2018-06-19"), thisListings);
 
-      for(Listings listings: thisListings) {
+      /** test for search listings by post-code**/
+      DatabaseSelectHelperImpl databaseSelectHelper2 = new DatabaseSelectHelperImpl();
+      databaseSelectHelper2.selectAllListings(1);
+      ArrayList<Listings> thisListings2 = databaseSelectHelper2.getListings();
+      SearchListings search2 = new SearchListings();
+      search2.getListingsAmenitiesByPostcode("0B2 0P6",thisListings2);
+
+      for(Listings listings: thisListings2) {
         System.out.println("***********************");
         System.out.println(listings.getId());
         System.out.println(listings.getPrice());
