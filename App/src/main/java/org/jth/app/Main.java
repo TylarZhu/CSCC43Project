@@ -6,6 +6,9 @@ import org.jth.comment.Comment;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 import org.jth.listings.Listings;
+import org.jth.report.ReportOfBooking;
+import org.jth.report.ReportOfHosts;
+import org.jth.report.ReportOfListings;
 import org.jth.user.Hosts;
 import org.jth.user.RenterHostListingRelationship;
 import org.jth.user.Renters;
@@ -36,6 +39,8 @@ public class Main {
   private static SaveIntoDatabase saveIntoDatabase = new SaveIntoDatabase();
   private static RenterHostListingRelationship renterHostListingRelationship = new RenterHostListingRelationship();
 
+  private static ReportOfBooking reportOfBooking = new ReportOfBooking();
+
   private static Date today = null;
 
   public static void main(String[] args) {
@@ -47,13 +52,16 @@ public class Main {
       System.out.println("Please enter today's date in this form (yyyy-MM-dd): ");
       today = parseStringToDate(input.nextLine());
       int choice = menu();
-      while(choice != 3) {
+      while(choice != 4) {
         switch (choice) {
           case 1:
             renterMenu();
             break;
           case 2:
             hostMenu();
+            break;
+          case 3:
+            reportMenu();
             break;
         }
         choice = menu();
@@ -113,6 +121,22 @@ public class Main {
 //      databaseInsertHelper.insertUnavailableTimes(4, parseStringToDate("2018-06-16"), parseStringToDate("2018-06-19"));
 //      databaseInsertHelper.insertUnavailableTimes(4, parseStringToDate("2018-11-12"), parseStringToDate("2018-11-20"));
 //      databaseInsertHelper.insertUnavailableTimes(4, parseStringToDate("2018-05-17"), parseStringToDate("2018-05-18"));
+      /** database report tester **/
+//      databaseSelectHelper.selectAllListings(1);
+//      ArrayList<Listings> thisListings = databaseSelectHelper.getListings();
+//      ArrayList<Listings> temp = new ArrayList<>();
+//      temp.addAll(thisListings);
+//      ReportOfListings report = new ReportOfListings();
+//      System.out.println(report.getReportByCountory(temp, "CANANDA"));
+//      System.out.println(report.getReportByCountoryAndCity(temp, "CANANDA", "TORONTO"));
+//      System.out.println(report.getReportByCountoryAndCityAndZip(temp, "CANANDA", "TORONTO", "0B2 0P3"));
+      /***********/
+//      databaseSelectHelper.selectAllUsers(2);
+//      ArrayList<Users> thisUsers = databaseSelectHelper.getHosts();
+//      ArrayList<Users> tep = new ArrayList<>();
+//      tep.addAll(thisUsers);
+//      ReportOfHosts reporta = new ReportOfHosts();
+//      System.out.println(reporta.rankHostsByCity("TORONTO",thisListings, thisUsers));
 
       /** database search helper**/
       /** test for search listings by data range**/
@@ -230,9 +254,38 @@ public class Main {
     System.out.println("Welcome!");
     System.out.println("Renter -- 1");
     System.out.println("Host -- 2");
-    System.out.println("Quit -- 3");
+    System.out.println("Run report -- 3");
+    System.out.println("Quit -- 4");
     System.out.println("******************");
     return input.nextInt();
+  }
+
+  private static void reportMenu(){
+    System.out.println("Number of booking by date range -- 1");
+    System.out.println("Number of booking by postal code -- 2");
+    System.out.println("Quit -- 3");
+    int choice = input.nextInt();
+    while(choice != 3) {
+      switch (choice) {
+        case 1 :
+          System.out.println("Please enter from date in this form (yyyy-mm-dd):");
+          String empty = input.nextLine();
+          Date fromDate = parseStringToDate(input.nextLine());
+          System.out.println("Please enter to date in this form (yyyy-mm-dd):");
+          Date toDate = parseStringToDate(input.nextLine());
+          System.out.println("Please enter which city:");
+          String city = input.nextLine();
+          System.out.println("Total number of city: " +
+                  reportOfBooking.totalNumberOfBookingByDateRange(fromDate, toDate, city, listings));
+          break;
+        case 2:
+          break;
+      }
+      System.out.println("Number of booking by date range -- 1");
+      System.out.println("Number of booking by postal code -- 2");
+      System.out.println("Quit -- 3");
+      choice = input.nextInt();
+    }
   }
 
   private static void renterMenu() {
