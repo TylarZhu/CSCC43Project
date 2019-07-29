@@ -163,7 +163,7 @@ public class Listings {
     System.out.println("House price: " + price);
     System.out.println("City: " + city);
     System.out.println("Country: " + country);
-    System.out.println("House availability" + availability);
+    System.out.println("House availability: " + availability);
     System.out.println("***********************");
   }
 

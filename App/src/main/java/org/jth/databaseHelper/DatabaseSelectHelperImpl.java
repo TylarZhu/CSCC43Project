@@ -256,7 +256,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     try {
       listings.clear();
       Connection connection = connectingToDatabase();
-      String sql = "SELECT * FROM listings WHERE price > ? AND price < ? ORDER BY price DESC;";
+      String sql = "SELECT * FROM listings WHERE price >= ? AND price <= ? ORDER BY price DESC;";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setDouble(1, from);
       preparedStatement.setDouble(2, to);

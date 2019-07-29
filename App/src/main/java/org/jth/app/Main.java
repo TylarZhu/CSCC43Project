@@ -26,10 +26,10 @@ public class Main {
 
   private static Scanner input = new Scanner(System.in);
   private static ArrayList<Users> renterList = new ArrayList<>();
-  private static ArrayList<Listings> listings = null;
-  private static ArrayList<Users> hostList = null;
-  private static ArrayList<Comment> comments = null;
-  private static ArrayList<CommentToListings> commentToListings = null;
+  private static ArrayList<Listings> listings = new ArrayList<>();
+  private static ArrayList<Users> hostList = new ArrayList<>();
+  private static ArrayList<Comment> comments = new ArrayList<>();
+  private static ArrayList<CommentToListings> commentToListings = new ArrayList<>();
 
   private static DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
   private static DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
@@ -50,15 +50,16 @@ public class Main {
       while(choice != 3) {
         switch (choice) {
           case 1:
-            renterRegisterMenu();
+            renterMenu();
             break;
           case 2:
-            hostRegisterMenu();
+            hostMenu();
             break;
         }
         choice = menu();
       }
-      saveToDatabase();
+      saveToDatabase(connection);
+      connection.close();
 
 //      DatabaseDriver databaseDriver = new DatabaseDriver();
 //      Connection connection = DatabaseDriver.connectingToDatabase();
@@ -200,15 +201,29 @@ public class Main {
 
   private static void initializeApp(){
     databaseSelectHelper.selectAllUsers(1);
-    renterList = databaseSelectHelper.getRenters();
+    ArrayList<Users> temp = databaseSelectHelper.getRenters();
+    renterList.addAll(temp);
+    temp.clear();
+
     databaseSelectHelper.selectAllUsers(2);
-    hostList = databaseSelectHelper.getHosts();
+    temp = databaseSelectHelper.getHosts();
+    hostList.addAll(temp);
+    temp.clear();
+
     databaseSelectHelper.selectAllListings(2);
-    listings = databaseSelectHelper.getListings();
+    ArrayList<Listings> temp2 = databaseSelectHelper.getListings();
+    listings.addAll(temp2);
+    temp2.clear();
+
     databaseSelectHelper.selectAllComment();
-    comments = databaseSelectHelper.getComments();
+    ArrayList<Comment> temp3 = databaseSelectHelper.getComments();
+    comments.addAll(temp3);
+    temp3.clear();
+
     databaseSelectHelper.selectAllCommentListings();
-    commentToListings = databaseSelectHelper.getCommentToListings();
+    ArrayList<CommentToListings> temp4 = databaseSelectHelper.getCommentToListings();
+    commentToListings.addAll(temp4);
+    temp4.clear();
   }
 
   private static int menu() {
@@ -220,9 +235,51 @@ public class Main {
     return input.nextInt();
   }
 
+  private static void renterMenu() {
+    System.out.println("Log in -- 1");
+    System.out.println("Sign up -- 2");
+    if(input.nextInt() == 1){
+      renterLogIn();
+    } else {
+      renterRegisterMenu();
+    }
+  }
+
+  private static void renterLogIn(){
+    System.out.println("Please enter your social insurance number:");
+    int ins = input.nextInt();
+    for (Users renter: renterList) {
+      if(renter.getSocial_insurance_number() == ins) {
+        System.out.println("Log in success!");
+        int choice = renterAfterLogInMenu();
+        while(choice != 4) {
+          switch (choice) {
+            case 1:
+              renterBooking(ins);
+              break;
+            case 2:
+              // TODO
+          }
+          choice = renterAfterLogInMenu();
+        }
+        return;
+      }
+    }
+    System.out.println("Log In failed!");
+  }
+
+  private static int renterAfterLogInMenu(){
+    System.out.println("rent a house -- 1");
+    System.out.println("Comment on a house -- 2");
+    System.out.println("View all comments -- 3");
+    System.out.println("Quit -- 4");
+    return input.nextInt();
+  }
+
   private static void renterRegisterMenu(){
     System.out.println("Please enter your social insurance number:");
     int ins = input.nextInt();
+    String empty = input.nextLine();
     System.out.println("Please enter your first name:");
     String firstName = input.nextLine();
     System.out.println("Please enter your last name:");
@@ -246,14 +303,14 @@ public class Main {
     System.out.println("Save renter success!");
     System.out.println("Do you want to rent a house? yes -- 1 no -- 2");
     if(input.nextInt() == 1) {
-      renterBooking();
+      renterBooking(ins);
     }
   }
 
-  private static void renterBooking() {
+  private static void renterBooking(int renterIns) {
     int choice = viewListingsMenu();
-    while(choice != 6) {
-      switch (viewListingsMenu()) {
+    while(choice != 7) {
+      switch (choice) {
         case 1:
           System.out.println("price decrease -- 1 price increase -- 2");
           databaseSelectHelper.selectAllListings(input.nextInt());
@@ -271,13 +328,69 @@ public class Main {
           break;
         case 3:
           System.out.println("Please enter postal code:");
+          String empty = input.nextLine();
           String postalCode = input.nextLine();
           System.out.println("price decrease -- 1 price increase -- 2");
           databaseSelectHelper.selectListingsByPostalCode(postalCode, input.nextInt());
           printListings(databaseSelectHelper.getListings());
           break;
+        case 4:
+          System.out.println("Please enter address:");
+          empty = input.nextLine();
+          String address = input.nextLine();
+          System.out.println("price decrease -- 1 price increase -- 2");
+          databaseSelectHelper.selectListingsByAddress(address, input.nextInt());
+          printListings(databaseSelectHelper.getListings());
+          break;
+        case 5:
+          System.out.println("Please enter range from:");
+          double from = input.nextDouble();
+          System.out.println("Please enter range to:");
+          double to = input.nextDouble();
+          databaseSelectHelper.selectListingsByPriceRange(from, to);
+          printListings(databaseSelectHelper.getListings());
+          break;
+        case 6:
+          System.out.println("Please choice a list id:");
+          int listId = input.nextInt();
+          System.out.println("Please enter the date you want to start booking in this form (yyyy-mm-dd):");
+          empty = input.nextLine();
+          Date startDate = parseStringToDate(input.nextLine());
+          System.out.println("Please enter the date you want to end in this form (yyyy-mm-dd):");
+          Date endDate = parseStringToDate(input.nextLine());
+          booking(listId, startDate, endDate, renterIns);
+          break;
       }
       choice = viewListingsMenu();
+    }
+  }
+
+  private static void booking(int listId, Date start, Date end, int renterIns) {
+    for(Listings listing: listings) {
+      if(listing.getId() == listId) {
+        listing.setUnavailableTime(start, end);
+        System.out.println("Booking success!");
+        addRenterHostListingRel(listing.getId(), renterIns);
+        return;
+      }
+    }
+    System.out.println("Cannot find list id!");
+  }
+
+  private static void addRenterHostListingRel(int listId, int renterIns) {
+    boolean flag = false;
+    for(Users host: hostList) {
+      Hosts hosts = (Hosts) host;
+      for(Integer list_id: hosts.getOwnListings()){
+        if(list_id == listId) {
+          renterHostListingRelationship.addRelationship(renterIns,host.getSocial_insurance_number(),listId);
+          flag = true;
+          break;
+        }
+      }
+      if(flag) {
+        break;
+      }
     }
   }
 
@@ -287,7 +400,8 @@ public class Main {
     System.out.println("Search listing by postal code -- 3");
     System.out.println("Search listing by address -- 4");
     System.out.println("Search listing by price range -- 5");
-    System.out.println("Quit -- 6");
+    System.out.println("Choice a listing to book -- 6");
+    System.out.println("Quit -- 7");
     System.out.println("Please enter your choice:");
     return input.nextInt();
   }
@@ -299,7 +413,34 @@ public class Main {
     }
   }
 
+  private static void hostMenu() {
+    System.out.println("Log in -- 1");
+    System.out.println("Sign up -- 2");
+    if(input.nextInt() == 1){
+      hostLogIn();
+    } else {
+      hostRegisterMenu();
+    }
+  }
 
+  private static void hostLogIn(){
+    System.out.println("Please enter your social insurance number:");
+    int ins = input.nextInt();
+    for(Users host: hostList) {
+      if(host.getSocial_insurance_number() == ins) {
+        System.out.println("Log in success!");
+        System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
+        int choice = input.nextInt();
+        while (choice == 1) {
+          listingsRegisterMenu((Hosts) host);
+          System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
+          choice = input.nextInt();
+        }
+        return;
+      }
+    }
+    System.out.println("Log In failed!");
+  }
 
   private static void hostRegisterMenu() {
     Date birthday = checkAge();
@@ -413,7 +554,9 @@ public class Main {
     }
   }
 
-  private static void saveToDatabase(){
+  private static void saveToDatabase(Connection connection){
+//    DatabaseDriver.dropDatabase(connection);
+//    DatabaseDriver.initializeDatabase(connection);
     saveIntoDatabase.saveUser(renterList, 1);
     saveIntoDatabase.saveUser(hostList, 2);
     saveIntoDatabase.saveRenterHostListing(renterHostListingRelationship);
