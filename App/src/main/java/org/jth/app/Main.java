@@ -41,7 +41,7 @@ public class Main {
   public static void main(String[] args) {
     try {
       Connection connection = DatabaseDriver.connectingToDatabase();
-      DatabaseDriver.dropDatabase(connection);
+      //DatabaseDriver.dropDatabase(connection);
       DatabaseDriver.initializeDatabase(connection);
       initializeApp();
       System.out.println("Please enter today's date in this form (yyyy-MM-dd): ");
