@@ -1,5 +1,6 @@
 package org.jth.listings;
 
+import org.jth.databaseHelper.DatabaseUpdateHelperImpl;
 import org.jth.fields.Amenities;
 import org.jth.fields.ListingType;
 
@@ -20,6 +21,8 @@ public class Listings {
 
   private ArrayList<Amenities> amenities = new ArrayList<>();
   private ArrayList<ArrayList<Date>> unavailableTime = new ArrayList<>();
+
+  private DatabaseUpdateHelperImpl databaseUpdateHelper = new DatabaseUpdateHelperImpl();
 
 
   public Listings(int id,
@@ -85,6 +88,7 @@ public class Listings {
       }
     }
     this.price = price;
+    databaseUpdateHelper.updatePrice(id, price);
   }
 
   public void changeAvailability(boolean availability, Date today) {
@@ -143,6 +147,24 @@ public class Listings {
 
   public ArrayList<Amenities> getAmenities(){
     return amenities;
+  }
+
+  public void printInfo(){
+    System.out.println("House id: " + id);
+    System.out.println("House latitude: " + latitude);
+    System.out.println("House longitude: " + longitude);
+    System.out.println("House Address: " + address);
+    System.out.println("House postal code: " + postal_code);
+    System.out.println("House Type: " + list_type.name());
+    System.out.println("House amenities: ");
+    for(Amenities amenity: amenities) {
+      System.out.println(amenity.name());
+    }
+    System.out.println("House price: " + price);
+    System.out.println("City: " + city);
+    System.out.println("Country: " + country);
+    System.out.println("House availability" + availability);
+    System.out.println("***********************");
   }
 
 }

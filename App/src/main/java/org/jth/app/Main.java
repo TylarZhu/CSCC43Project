@@ -2,11 +2,18 @@ package org.jth.app;
 
 import org.jth.databaseHelper.*;
 import org.jth.comment.Comment;
+import org.jth.fields.Amenities;
+import org.jth.fields.ListingType;
+import org.jth.listings.Listings;
+import org.jth.user.Hosts;
 import org.jth.user.RenterHostListingRelationship;
+import org.jth.user.Renters;
+import org.jth.user.Users;
 
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -15,30 +22,52 @@ import static org.jth.fields.ListingType.*;
 
 public class Main {
 
+  private static Scanner input = new Scanner(System.in);
+  private static ArrayList<Users> renterList = new ArrayList<>();
+  private static ArrayList<Listings> listings = new ArrayList<>();
+  private static ArrayList<Users> hostList = new ArrayList<>();
 
+  private static DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
+  private static DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
+  private static SaveIntoDatabase saveIntoDatabase = new SaveIntoDatabase();
+  private static RenterHostListingRelationship renterHostListingRelationship = new RenterHostListingRelationship();
+
+  private static Date today = null;
 
   public static void main(String[] args) {
     try {
-//      switch (menu()) {
-//        case 1:
-//          Connection connection = DatabaseDriver.connectingToDatabase();
-//          DatabaseDriver.initializeDatabase(connection);
-//          DatabaseDriver.dropDatabase(connection);
-//          break;
-//      }
+      Connection connection = DatabaseDriver.connectingToDatabase();
+      DatabaseDriver.initializeDatabase(connection);
+      System.out.println("Please enter today's date in this form (yyyy-MM-dd): ");
+      today = parseStringToDate(input.nextLine());
+      int choice = menu();
+      while(choice != 3) {
+        switch (choice) {
+          case 1:
+            renterRegisterMenu();
+            break;
+          case 2:
+            hostRegisterMenu();
+            break;
+        }
+        choice = menu();
+        saveToDatabase();
+      }
 
 //      DatabaseDriver databaseDriver = new DatabaseDriver();
 //      Connection connection = DatabaseDriver.connectingToDatabase();
-//      DatabaseDriver.initializeDatabase(connection);
+//     DatabaseDriver.initializeDatabase(connection);
 //      DatabaseDriver.dropDatabase(connection);
-//
-      DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
-//      databaseInsertHelper.insertListings(11, 11, "70 TOWN CENTER", "0B2 0P3",
+
+//      DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
+//      int listid = databaseInsertHelper.insertListings(11, 11, "70 TOWN CENTER", "0B2 0P3",
 //          APARTMENT, 1, "TORONTO", "CANANDA", true);
 //      databaseInsertHelper.insertAmenities(1, KITCHEN);
 //      databaseInsertHelper.insertAmenities(1, HEATING);
 //      databaseInsertHelper.insertAmenities(1, WASHER);
 //      databaseInsertHelper.insertAmenities(1, WIFI);
+//
+//      System.out.println(listid);
 //
 //      databaseInsertHelper.insertUnavailableTimes(1, parseStringToDate("2018-01-08"), parseStringToDate("2018-01-10"));
 //      databaseInsertHelper.insertUnavailableTimes(1, parseStringToDate("2018-03-12"), parseStringToDate("2018-03-20"));
@@ -137,7 +166,7 @@ public class Main {
 //      databaseInsertHelper.insertRelationshipRenterHost(1005, 1001, 4);
 //      databaseInsertHelper.insertRelationshipRenterHost(1006, 1002, 2);
 
-      databaseInsertHelper.insertCommentListing(1004, 3, "haha", 5);
+//      databaseInsertHelper.insertCommentListing(1004, 3, "haha", 5);
 
 //      databaseSelectHelper.selectAllUsers(2);
 //      ArrayList<Users> hostList = databaseSelectHelper.getUsers();
@@ -167,9 +196,169 @@ public class Main {
     System.out.println("Welcome!");
     System.out.println("Renter -- 1");
     System.out.println("Host -- 2");
+    System.out.println("Quit -- 3");
     System.out.println("******************");
-    Scanner input = new Scanner(System.in);
     return input.nextInt();
+  }
+
+  private static void renterRegisterMenu(){
+    System.out.println("Please enter your social insurance number:");
+    int ins = input.nextInt();
+    String empty = input.nextLine();
+    System.out.println("Please enter your first name:");
+    String firstName = input.nextLine();
+    System.out.println("Please enter your last name:");
+    String lastName = input.nextLine();
+    System.out.println("Please enter your address:");
+    String address = input.nextLine();
+    System.out.println("Please enter postal code:");
+    String postalCode = input.nextLine();
+    System.out.println("Please enter your birthday in this form (yyyy-mm-dd):");
+    String birthday = input.nextLine();
+    System.out.println("Please enter your occupation:");
+    String occupation = input.nextLine();
+    System.out.println("Please enter your card number:");
+    String cardNumber = input.nextLine();
+    System.out.println("Please enter your card expiry date in this form (yy/mm):");
+    String card_expiry_date = input.nextLine();
+    System.out.println("Please enter your cvv:");
+    int cvv = input.nextInt();
+    renterList.add(new Renters(ins, firstName, lastName, address, postalCode, parseStringToDate(birthday),
+        occupation, cardNumber, card_expiry_date, cvv));
+    System.out.println("Save renter success!");
+    renterBooking();
+  }
+
+  private static void renterBooking() {
+    switch (viewListingsMenu()) {
+      case 1:
+        System.out.println("price decrease -- 1 price increase -- 2");
+        databaseSelectHelper.selectAllListings(input.nextInt());
+        printListings(databaseSelectHelper.getListings());
+        break;
+      case 2:
+        System.out.println("Please enter latitude:");
+        double latitude = input.nextDouble();
+        System.out.println("Please enter longitude:");
+        double longitude = input.nextDouble();
+        System.out.println("Please enter distance:");
+        double distance = input.nextDouble();
+        databaseSelectHelper.selectListingsByLatitudeLongitude(latitude, longitude, distance);
+        printListings(databaseSelectHelper.getListings());
+        break;
+      case 3:
+        System.out.println("Please enter postal code:");
+        String postalCode = input.nextLine();
+        System.out.println("price decrease -- 1 price increase -- 2");
+        databaseSelectHelper.selectListingsByPostalCode(postalCode, input.nextInt());
+        printListings(databaseSelectHelper.getListings());
+        break;
+    }
+  }
+
+  private static int viewListingsMenu(){
+    System.out.println("View all listing -- 1");
+    System.out.println("Search listing by latitude longitude and distance -- 2");
+    System.out.println("Search listing by postal code -- 3");
+    System.out.println("Search listing by address -- 4");
+    System.out.println("Search listing by price range -- 5");
+    System.out.println("Please enter your choice:");
+    return input.nextInt();
+  }
+
+  private static void printListings(ArrayList<Listings> listingList) {
+    for(Listings listing: listingList) {
+      listing.printInfo();
+    }
+  }
+
+
+
+  private static void hostRegisterMenu() {
+    System.out.println("Please enter your social insurance number:");
+    int ins = input.nextInt();
+    String empty = input.nextLine();
+    System.out.println("Please enter your first name:");
+    String firstName = input.nextLine();
+    System.out.println("Please enter your last name:");
+    String lastName = input.nextLine();
+    System.out.println("Please enter your address:");
+    String address = input.nextLine();
+    System.out.println("Please enter postal code:");
+    String postalCode = input.nextLine();
+    System.out.println("Please enter your birthday in this form (yyyy-mm-dd):");
+    String birthday = input.nextLine();
+
+    System.out.println("Please enter your occupation:");
+    String occupation = input.nextLine();
+    Hosts hosts = new Hosts(ins, firstName, lastName, address, postalCode, parseStringToDate(birthday), occupation);
+    hostList.add(hosts);
+    System.out.println("Save host success!");
+
+    System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
+    int choice = input.nextInt();
+    while(choice == 1) {
+      listingsRegisterMenu(hosts);
+      System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
+      choice = input.nextInt();
+    }
+  }
+
+
+
+  private static void listingsRegisterMenu(Hosts hosts) {
+    System.out.println("Please enter listing's latitude:");
+    int latitude = input.nextInt();
+    System.out.println("Please enter listing's longitude:");
+    int longitude = input.nextInt();
+    String empty = input.nextLine();
+    System.out.println("Please enter listing's address:");
+    String address = input.nextLine();
+    System.out.println("Please enter listing's postal code:");
+    String postalCode = input.nextLine();
+    System.out.println("Please choice a listing's type");
+    System.out.println("Please enter the exact letter provided (all words in capital letters and underscore):");
+    ListingType listingType = ListingType.valueOf(printListingType());
+    System.out.println("Please enter listing's price:");
+    double price = input.nextDouble();
+    empty = input.nextLine();
+    System.out.println("Please enter listing's city:");
+    String city = input.nextLine();
+    System.out.println("Please enter listing's country:");
+    String country = input.nextLine();
+
+    int listId = databaseInsertHelper.insertListings(latitude, longitude, address, postalCode, listingType, price, city, country, true);
+    Listings listing = new Listings(listId, latitude, longitude, address, postalCode, listingType, price, city, country, true);
+    listings.add(listing);
+
+    printAmenities(listing);
+
+    hosts.setOwnListings(listId);
+    System.out.println("Save list success!");
+  }
+
+  private static String printListingType() {
+    for(ListingType listingType: ListingType.values()) {
+      System.out.println(listingType.name());
+    }
+    return input.nextLine();
+  }
+
+  private static void printAmenities(Listings listing) {
+    System.out.println("Please choice a amenities's type");
+    System.out.println("Enter QUIT for quit.");
+    System.out.println("Please enter the exact letter provided (all words in capital letters and underscore):");
+    String choice = "";
+    while(!choice.equals("QUIT")) {
+      for (Amenities amenities : Amenities.values()) {
+        System.out.println(amenities.name());
+      }
+      System.out.println("QUIT");
+      choice = input.nextLine();
+      if(!choice.equals("QUIT")){
+        listing.addAmenities(Amenities.valueOf(choice));
+      }
+    }
   }
 
   private static Date parseStringToDate(String date) {
@@ -180,6 +369,14 @@ public class Main {
       e.printStackTrace();
       return null;
     }
+  }
+
+  private static void saveToDatabase(){
+    saveIntoDatabase.saveUser(renterList, 1);
+    saveIntoDatabase.saveUser(hostList, 2);
+    saveIntoDatabase.saveRenterHostListing(renterHostListingRelationship);
+    saveIntoDatabase.saveAmenities(listings);
+
   }
 
 }

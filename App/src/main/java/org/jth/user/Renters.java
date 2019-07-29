@@ -22,6 +22,15 @@ public class Renters extends Users {
     this.cvv = cvv;
   }
 
+  public Renters(int social_insurance_number, String first_name, String last_name, String address, String postal_code,
+                 Date date_of_birth, String occupation,
+                 String card_number, String card_expiry_date, int cvv){
+    super(social_insurance_number, first_name, last_name, address, postal_code, date_of_birth, occupation);
+    this.card_number = card_number;
+    this.card_expiry_date = card_expiry_date;
+    this.cvv = cvv;
+  }
+
   public void addBooking(int list_id) {
     furtureBooking.add(list_id);
   }

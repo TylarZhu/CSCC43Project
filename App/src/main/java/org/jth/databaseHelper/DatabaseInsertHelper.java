@@ -5,7 +5,7 @@ import org.jth.fields.*;
 import java.util.Date;
 
 public interface DatabaseInsertHelper {
-  void insertListings(double latitude, double longitude, String address, String postal_code,
+  int insertListings(double latitude, double longitude, String address, String postal_code,
                       ListingType listingType, double price, String city, String country, boolean availability);
 
   void insertAmenities(int list_id, Amenities amenities);

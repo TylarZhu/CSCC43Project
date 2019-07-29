@@ -20,13 +20,13 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
 //  }
 
   @Override
-  public void insertListings(double latitude, double longitude, String address, String postal_code,
+  public int insertListings(double latitude, double longitude, String address, String postal_code,
                              ListingType listingType, double price, String city, String country, boolean availability) {
     try {
       Connection connection = connectingToDatabase();
       String sql = "INSERT INTO listings (latitude, longitude, address, postal_code, list_type, price, city, country, availability)" +
           "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setDouble(1, latitude);
       preparedStatement.setDouble(2, longitude);
       preparedStatement.setString(3, address);
@@ -36,12 +36,22 @@ public class DatabaseInsertHelperImpl implements DatabaseInsertHelper {
       preparedStatement.setString(7,city);
       preparedStatement.setString(8,country);
       preparedStatement.setBoolean(9,availability);
-      preparedStatement.executeUpdate();
+      int id = preparedStatement.executeUpdate();
+      ResultSet resultSet = null;
+      int listId = -1;
+      if (id > 0) {
+        resultSet = preparedStatement.getGeneratedKeys();
+        if (resultSet.next()) {
+          listId = resultSet.getInt(1);
+        }
+      }
       preparedStatement.close();
       connection.close();
+      return listId;
     } catch (Exception e) {
       System.out.println("Something went wrong with insert listing! see below details: ");
       e.printStackTrace();
+      return -1;
     }
   }
 

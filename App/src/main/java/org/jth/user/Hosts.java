@@ -15,6 +15,11 @@ public class Hosts extends Users {
     this.hostId = hostId;
   }
 
+  public Hosts(int social_insurance_number, String first_name, String last_name, String address,
+               String postal_code, Date date_of_birth, String occupation){
+    super(social_insurance_number, first_name, last_name, address, postal_code, date_of_birth, occupation);
+  }
+
   public void setOwnListings(int listings) {
     this.ownListings.add(listings);
   }

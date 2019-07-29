@@ -238,6 +238,24 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   }
 
   @Override
+  public void selectListingsByPriceRange(double from, double to) {
+    try {
+      Connection connection = connectingToDatabase();
+      String sql = "SELECT * FROM listings WHERE price > ? AND price < ? ORDER BY price DESC;";
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setDouble(1, from);
+      preparedStatement.setDouble(2, to);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      loadListingsFromDB(resultSet, connection);
+      preparedStatement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.out.println("Something went wrong with select Listings By Address! see below details: ");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
   public void selectAllUsers(int choice) {
     try {
       Connection connection = connectingToDatabase();

@@ -25,4 +25,30 @@ public class Users {
   public String getName(){
     return (this.first_name + " " + this.last_name);
   }
+
+  public int getSocial_insurance_number() {
+    return social_insurance_number;
+  }
+
+  public String getFirst_name() {
+    return first_name;
+  }
+
+  public String getLast_name(){
+    return last_name;
+  }
+
+  public String getAddress(){
+    return address;
+  }
+
+  public String getPostal_code(){
+    return postal_code;
+  }
+  public Date getDate_of_birth(){
+    return date_of_birth;
+  }
+  public String getOccupation() {
+    return occupation;
+  }
 }
