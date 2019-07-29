@@ -33,8 +33,7 @@ public class SaveIntoDatabase {
             hosts.getLast_name(), hosts.getAddress(), hosts.getPostal_code(), hosts.getDate_of_birth(),
             hosts.getOccupation());
         for(Integer list_id: hosts.getOwnListings()) {
-          databaseInsertHelper.insertHostOwnListings(hosts.getSocial_insurance_number(),
-              hosts.getSocial_insurance_number());
+          databaseInsertHelper.insertHostOwnListings(hosts.getSocial_insurance_number(), list_id);
         }
       }
     }

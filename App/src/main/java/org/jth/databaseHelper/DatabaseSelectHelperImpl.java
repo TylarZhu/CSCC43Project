@@ -19,13 +19,15 @@ import static org.jth.databaseHelper.DatabaseDriver.*;
 public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
 
   private ArrayList<Listings> listings = new ArrayList<>();
-  private ArrayList<Users> users = new ArrayList<>();
+  private ArrayList<Users> hosts = new ArrayList<>();
+  private ArrayList<Users> renters = new ArrayList<>();
   private ArrayList<Comment> comments = new ArrayList<>();
   private RenterHostListingRelationship renterHostListingRelationship = new RenterHostListingRelationship();
   private ArrayList<CommentToListings> commentToListings = new ArrayList<>();
 
   private void loadListingsFromDB(ResultSet resultSet, Connection connection){
     try {
+      listings.clear();
       while(resultSet.next()) {
         Listings listing = new Listings(resultSet.getInt("id"),
             resultSet.getDouble("latitude"),
@@ -69,7 +71,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   private void loadRenterFromDB(ResultSet resultSet) {
     try {
       while (resultSet.next()) {
-        users.add(new Renters(resultSet.getInt("social_insurance_number"),
+        renters.add(new Renters(resultSet.getInt("social_insurance_number"),
             resultSet.getString("first_name"),
             resultSet.getString("last_name"),
             resultSet.getString("address"),
@@ -91,7 +93,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   private void loadHostsFromDB(ResultSet hostInfo, Connection connection) {
     try {
       while (hostInfo.next()) {
-        Hosts hosts = new Hosts(hostInfo.getInt("social_insurance_number"),
+        Hosts host = new Hosts(hostInfo.getInt("social_insurance_number"),
             hostInfo.getString("first_name"),
             hostInfo.getString("last_name"),
             hostInfo.getString("address"),
@@ -104,10 +106,10 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
         preparedStatement.setInt(1, hostInfo.getInt("host_profile"));
         ResultSet hostListings = preparedStatement.executeQuery();
         while (hostListings.next()) {
-          hosts.setOwnListings(hostListings.getInt("list_id"));
+          host.setOwnListings(hostListings.getInt("list_id"));
         }
 
-        users.add(hosts);
+        hosts.add(host);
         hostListings.close();
       }
       hostInfo.close();
@@ -137,12 +139,20 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
     return listings;
   }
 
-  public ArrayList<Users> getUsers(){
-    return users;
+  public ArrayList<Users> getHosts(){
+    return hosts;
+  }
+
+  public ArrayList<Users> getRenters(){
+    return renters;
   }
 
   public ArrayList<Comment> getComments() {
     return comments;
+  }
+
+  public ArrayList<CommentToListings> getCommentToListings(){
+    return commentToListings;
   }
 
   public RenterHostListingRelationship getRenterHostListingRelationship() {
@@ -152,6 +162,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   @Override
   public void selectAllListings(int choice) {
     try {
+      listings.clear();
       Connection connection = connectingToDatabase();
       Statement statement = connection.createStatement();
       String sql = null;
@@ -173,6 +184,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   @Override
   public void selectListingsByPostalCode(String postalCode, int choice) {
     try {
+      listings.clear();
       Connection connection = connectingToDatabase();
       String sql = null;
       if(choice == 1) {
@@ -196,6 +208,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   @Override
   public void selectListingsByLatitudeLongitude(double latitude, double longitude, double distance) {
     try {
+      listings.clear();
       Connection connection = connectingToDatabase();
       String sql = "SELECT * From listings WHERE (SQRT(POWER((? - longitude), 2) + POWER((? - latitude), 2)) <= ?) " +
           "ORDER BY (SQRT(POWER((? - longitude), 2) + POWER((? - latitude), 2)));";
@@ -218,6 +231,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   @Override
   public void selectListingsByAddress(String address, int choice) {
     try {
+      listings.clear();
       Connection connection = connectingToDatabase();
       String sql = null;
       if(choice == 1) {
@@ -240,6 +254,7 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   @Override
   public void selectListingsByPriceRange(double from, double to) {
     try {
+      listings.clear();
       Connection connection = connectingToDatabase();
       String sql = "SELECT * FROM listings WHERE price > ? AND price < ? ORDER BY price DESC;";
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -259,6 +274,8 @@ public class DatabaseSelectHelperImpl implements DatabaseSelectHelper {
   public void selectAllUsers(int choice) {
     try {
       Connection connection = connectingToDatabase();
+      hosts.clear();
+      renters.clear();
       String sql = null;
       if(choice == 1) {
         sql = "SELECT * FROM users NATURAL JOIN renters WHERE renters.renter_profile = users.social_insurance_number;";

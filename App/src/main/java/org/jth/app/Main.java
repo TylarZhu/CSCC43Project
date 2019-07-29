@@ -1,5 +1,6 @@
 package org.jth.app;
 
+import org.jth.comment.CommentToListings;
 import org.jth.databaseHelper.*;
 import org.jth.comment.Comment;
 import org.jth.fields.Amenities;
@@ -25,8 +26,10 @@ public class Main {
 
   private static Scanner input = new Scanner(System.in);
   private static ArrayList<Users> renterList = new ArrayList<>();
-  private static ArrayList<Listings> listings = new ArrayList<>();
-  private static ArrayList<Users> hostList = new ArrayList<>();
+  private static ArrayList<Listings> listings = null;
+  private static ArrayList<Users> hostList = null;
+  private static ArrayList<Comment> comments = null;
+  private static ArrayList<CommentToListings> commentToListings = null;
 
   private static DatabaseInsertHelperImpl databaseInsertHelper = new DatabaseInsertHelperImpl();
   private static DatabaseSelectHelperImpl databaseSelectHelper = new DatabaseSelectHelperImpl();
@@ -38,7 +41,9 @@ public class Main {
   public static void main(String[] args) {
     try {
       Connection connection = DatabaseDriver.connectingToDatabase();
+      DatabaseDriver.dropDatabase(connection);
       DatabaseDriver.initializeDatabase(connection);
+      initializeApp();
       System.out.println("Please enter today's date in this form (yyyy-MM-dd): ");
       today = parseStringToDate(input.nextLine());
       int choice = menu();
@@ -52,8 +57,8 @@ public class Main {
             break;
         }
         choice = menu();
-        saveToDatabase();
       }
+      saveToDatabase();
 
 //      DatabaseDriver databaseDriver = new DatabaseDriver();
 //      Connection connection = DatabaseDriver.connectingToDatabase();
@@ -193,6 +198,19 @@ public class Main {
     }
   }
 
+  private static void initializeApp(){
+    databaseSelectHelper.selectAllUsers(1);
+    renterList = databaseSelectHelper.getRenters();
+    databaseSelectHelper.selectAllUsers(2);
+    hostList = databaseSelectHelper.getHosts();
+    databaseSelectHelper.selectAllListings(2);
+    listings = databaseSelectHelper.getListings();
+    databaseSelectHelper.selectAllComment();
+    comments = databaseSelectHelper.getComments();
+    databaseSelectHelper.selectAllCommentListings();
+    commentToListings = databaseSelectHelper.getCommentToListings();
+  }
+
   private static int menu() {
     System.out.println("Welcome!");
     System.out.println("Renter -- 1");
@@ -205,7 +223,6 @@ public class Main {
   private static void renterRegisterMenu(){
     System.out.println("Please enter your social insurance number:");
     int ins = input.nextInt();
-    String empty = input.nextLine();
     System.out.println("Please enter your first name:");
     String firstName = input.nextLine();
     System.out.println("Please enter your last name:");
@@ -227,33 +244,40 @@ public class Main {
     renterList.add(new Renters(ins, firstName, lastName, address, postalCode, parseStringToDate(birthday),
         occupation, cardNumber, card_expiry_date, cvv));
     System.out.println("Save renter success!");
-    renterBooking();
+    System.out.println("Do you want to rent a house? yes -- 1 no -- 2");
+    if(input.nextInt() == 1) {
+      renterBooking();
+    }
   }
 
   private static void renterBooking() {
-    switch (viewListingsMenu()) {
-      case 1:
-        System.out.println("price decrease -- 1 price increase -- 2");
-        databaseSelectHelper.selectAllListings(input.nextInt());
-        printListings(databaseSelectHelper.getListings());
-        break;
-      case 2:
-        System.out.println("Please enter latitude:");
-        double latitude = input.nextDouble();
-        System.out.println("Please enter longitude:");
-        double longitude = input.nextDouble();
-        System.out.println("Please enter distance:");
-        double distance = input.nextDouble();
-        databaseSelectHelper.selectListingsByLatitudeLongitude(latitude, longitude, distance);
-        printListings(databaseSelectHelper.getListings());
-        break;
-      case 3:
-        System.out.println("Please enter postal code:");
-        String postalCode = input.nextLine();
-        System.out.println("price decrease -- 1 price increase -- 2");
-        databaseSelectHelper.selectListingsByPostalCode(postalCode, input.nextInt());
-        printListings(databaseSelectHelper.getListings());
-        break;
+    int choice = viewListingsMenu();
+    while(choice != 6) {
+      switch (viewListingsMenu()) {
+        case 1:
+          System.out.println("price decrease -- 1 price increase -- 2");
+          databaseSelectHelper.selectAllListings(input.nextInt());
+          printListings(databaseSelectHelper.getListings());
+          break;
+        case 2:
+          System.out.println("Please enter latitude:");
+          double latitude = input.nextDouble();
+          System.out.println("Please enter longitude:");
+          double longitude = input.nextDouble();
+          System.out.println("Please enter distance:");
+          double distance = input.nextDouble();
+          databaseSelectHelper.selectListingsByLatitudeLongitude(latitude, longitude, distance);
+          printListings(databaseSelectHelper.getListings());
+          break;
+        case 3:
+          System.out.println("Please enter postal code:");
+          String postalCode = input.nextLine();
+          System.out.println("price decrease -- 1 price increase -- 2");
+          databaseSelectHelper.selectListingsByPostalCode(postalCode, input.nextInt());
+          printListings(databaseSelectHelper.getListings());
+          break;
+      }
+      choice = viewListingsMenu();
     }
   }
 
@@ -263,11 +287,13 @@ public class Main {
     System.out.println("Search listing by postal code -- 3");
     System.out.println("Search listing by address -- 4");
     System.out.println("Search listing by price range -- 5");
+    System.out.println("Quit -- 6");
     System.out.println("Please enter your choice:");
     return input.nextInt();
   }
 
   private static void printListings(ArrayList<Listings> listingList) {
+    System.out.println("***********************");
     for(Listings listing: listingList) {
       listing.printInfo();
     }
@@ -280,8 +306,8 @@ public class Main {
     if(birthday != null) {
       System.out.println("Please enter your social insurance number:");
       int ins = input.nextInt();
-      String empty = input.nextLine();
       System.out.println("Please enter your first name:");
+      String empty = input.nextLine();
       String firstName = input.nextLine();
       System.out.println("Please enter your last name:");
       String lastName = input.nextLine();
@@ -289,17 +315,16 @@ public class Main {
       String address = input.nextLine();
       System.out.println("Please enter postal code:");
       String postalCode = input.nextLine();
-
       System.out.println("Please enter your occupation:");
       String occupation = input.nextLine();
-      Hosts hosts = new Hosts(ins, firstName, lastName, address, postalCode, parseStringToDate(birthday), occupation);
-      hostList.add(hosts);
+      Hosts host = new Hosts(ins, firstName, lastName, address, postalCode, birthday, occupation);
+      hostList.add(host);
       System.out.println("Save host success!");
 
       System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
       int choice = input.nextInt();
       while (choice == 1) {
-        listingsRegisterMenu(hosts);
+        listingsRegisterMenu(host);
         System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
         choice = input.nextInt();
       }
@@ -308,12 +333,19 @@ public class Main {
 
   private static Date checkAge() {
     System.out.println("Please enter your birthday in this form (yyyy-mm-dd):");
+    String empty = input.nextLine();
     String birthday = input.nextLine();
     Date date = parseStringToDate(birthday);
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(date);
     int birthdayYear = calendar.get(calendar.YEAR);
-    calendar.
+    calendar.setTime(today);
+    int age = calendar.get(calendar.YEAR) - birthdayYear;
+    if(age > 18) {
+      return date;
+    }
+    System.out.println("Too young to be a host!");
+    return null;
   }
 
 
@@ -322,8 +354,8 @@ public class Main {
     int latitude = input.nextInt();
     System.out.println("Please enter listing's longitude:");
     int longitude = input.nextInt();
-    String empty = input.nextLine();
     System.out.println("Please enter listing's address:");
+    String empty = input.nextLine();
     String address = input.nextLine();
     System.out.println("Please enter listing's postal code:");
     String postalCode = input.nextLine();
@@ -332,12 +364,11 @@ public class Main {
     ListingType listingType = ListingType.valueOf(printListingType());
     System.out.println("Please enter listing's price:");
     double price = input.nextDouble();
-    empty = input.nextLine();
     System.out.println("Please enter listing's city:");
+    empty = input.nextLine();
     String city = input.nextLine();
     System.out.println("Please enter listing's country:");
     String country = input.nextLine();
-
     int listId = databaseInsertHelper.insertListings(latitude, longitude, address, postalCode, listingType, price, city, country, true);
     Listings listing = new Listings(listId, latitude, longitude, address, postalCode, listingType, price, city, country, true);
     listings.add(listing);
@@ -360,11 +391,11 @@ public class Main {
     System.out.println("Enter QUIT for quit.");
     System.out.println("Please enter the exact letter provided (all words in capital letters and underscore):");
     String choice = "";
+    for (Amenities amenities : Amenities.values()) {
+      System.out.println(amenities.name());
+    }
+    System.out.println("QUIT");
     while(!choice.equals("QUIT")) {
-      for (Amenities amenities : Amenities.values()) {
-        System.out.println(amenities.name());
-      }
-      System.out.println("QUIT");
       choice = input.nextLine();
       if(!choice.equals("QUIT")){
         listing.addAmenities(Amenities.valueOf(choice));
@@ -387,7 +418,6 @@ public class Main {
     saveIntoDatabase.saveUser(hostList, 2);
     saveIntoDatabase.saveRenterHostListing(renterHostListingRelationship);
     saveIntoDatabase.saveAmenities(listings);
-
   }
 
 }
