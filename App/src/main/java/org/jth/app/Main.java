@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -275,35 +276,45 @@ public class Main {
 
 
   private static void hostRegisterMenu() {
-    System.out.println("Please enter your social insurance number:");
-    int ins = input.nextInt();
-    String empty = input.nextLine();
-    System.out.println("Please enter your first name:");
-    String firstName = input.nextLine();
-    System.out.println("Please enter your last name:");
-    String lastName = input.nextLine();
-    System.out.println("Please enter your address:");
-    String address = input.nextLine();
-    System.out.println("Please enter postal code:");
-    String postalCode = input.nextLine();
-    System.out.println("Please enter your birthday in this form (yyyy-mm-dd):");
-    String birthday = input.nextLine();
+    Date birthday = checkAge();
+    if(birthday != null) {
+      System.out.println("Please enter your social insurance number:");
+      int ins = input.nextInt();
+      String empty = input.nextLine();
+      System.out.println("Please enter your first name:");
+      String firstName = input.nextLine();
+      System.out.println("Please enter your last name:");
+      String lastName = input.nextLine();
+      System.out.println("Please enter your address:");
+      String address = input.nextLine();
+      System.out.println("Please enter postal code:");
+      String postalCode = input.nextLine();
 
-    System.out.println("Please enter your occupation:");
-    String occupation = input.nextLine();
-    Hosts hosts = new Hosts(ins, firstName, lastName, address, postalCode, parseStringToDate(birthday), occupation);
-    hostList.add(hosts);
-    System.out.println("Save host success!");
+      System.out.println("Please enter your occupation:");
+      String occupation = input.nextLine();
+      Hosts hosts = new Hosts(ins, firstName, lastName, address, postalCode, parseStringToDate(birthday), occupation);
+      hostList.add(hosts);
+      System.out.println("Save host success!");
 
-    System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
-    int choice = input.nextInt();
-    while(choice == 1) {
-      listingsRegisterMenu(hosts);
       System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
-      choice = input.nextInt();
+      int choice = input.nextInt();
+      while (choice == 1) {
+        listingsRegisterMenu(hosts);
+        System.out.println("Do you want to add new listings? yes -- 1 no -- 2");
+        choice = input.nextInt();
+      }
     }
   }
 
+  private static Date checkAge() {
+    System.out.println("Please enter your birthday in this form (yyyy-mm-dd):");
+    String birthday = input.nextLine();
+    Date date = parseStringToDate(birthday);
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    int birthdayYear = calendar.get(calendar.YEAR);
+    calendar.
+  }
 
 
   private static void listingsRegisterMenu(Hosts hosts) {

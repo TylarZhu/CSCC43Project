@@ -19,5 +19,13 @@ public class RenterHostListingRelationship {
   }
 
 
-  //TODO renteral history
+  public ArrayList<Integer> getRentalHistory(int renterIns) {
+    ArrayList<Integer> listIdArray = new ArrayList<>();
+    for(ArrayList<Integer> r: relation) {
+      if(r.get(0) == renterIns) {
+        listIdArray.add(r.get(2));
+      }
+    }
+    return listIdArray;
+  }
 }
